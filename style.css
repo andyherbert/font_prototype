@@ -1,0 +1,9 @@
+body {
+    margin: 0px;
+    cursor: default;
+}
+
+body > div {
+    width: 100vw;
+    height: 100vh;
+}
