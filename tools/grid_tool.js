@@ -123,6 +123,7 @@ export default class GridTool {
         editor.addElementToDock(this.gapLineButton.getDiv());
         this.gridButton.addEventListener('pointerdown', () => {
             this.toggleGrid(editor);
+            this.gridButton.flash();
         });
         this.baseLineButton.addEventListener('pointerdown', () => {
             this.toggleBaseline(editor);
@@ -192,6 +193,7 @@ export default class GridTool {
     }
     keyDown(_key, editor) {
         this.toggleGrid(editor);
+        this.gridButton.flash();
         this.redraw(editor);
         return false;
     }

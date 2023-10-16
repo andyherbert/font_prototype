@@ -145,6 +145,7 @@ export default class GridTool implements ToolInterface {
         editor.addElementToDock(this.gapLineButton.getDiv());
         this.gridButton.addEventListener('pointerdown', () => {
             this.toggleGrid(editor);
+            this.gridButton.flash();
         });
         this.baseLineButton.addEventListener('pointerdown', () => {
             this.toggleBaseline(editor);
@@ -215,6 +216,7 @@ export default class GridTool implements ToolInterface {
 
     keyDown(_key: Key, editor: Editor): boolean {
         this.toggleGrid(editor);
+        this.gridButton.flash();
         this.redraw(editor);
         return false;
     }
