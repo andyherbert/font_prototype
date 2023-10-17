@@ -56,7 +56,7 @@ async function fetchText(url) {
 export default class ReadMeTool {
     name = 'ReadMe';
     button = new ReadMeButton('ReadMe');
-    toolbar = new TextToolbar(this.button, '../README.txt');
+    toolbar = new TextToolbar(this.button, './README.txt');
     init(editor) {
         editor.addElementToDock(this.button.getDiv());
         this.button.addEventListener('click', () => {

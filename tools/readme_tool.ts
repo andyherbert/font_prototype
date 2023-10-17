@@ -71,7 +71,7 @@ async function fetchText(url: string): Promise<string> {
 export default class ReadMeTool implements ToolInterface {
     name = 'ReadMe';
     private readonly button = new ReadMeButton('ReadMe');
-    private readonly toolbar = new TextToolbar(this.button, '../README.txt');
+    private readonly toolbar = new TextToolbar(this.button, './README.txt');
 
     init(editor: Editor): void {
         editor.addElementToDock(this.button.getDiv());
