@@ -10,6 +10,7 @@ import FillTool from '../tools/fill_tool.js';
 import MoveTool from '../tools/move_tool.js';
 import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
+import ReadMeTool from '../tools/readme_tool.js';
 class Dock {
     toolbar = new Toolbar(this);
     constructor() { }
@@ -43,6 +44,7 @@ export default class Editor {
         new GridTool(),
         new ZoomTool(),
         new UndoTool(),
+        new ReadMeTool(),
     ];
     currentTool = 0;
     constructor(width, height) {
@@ -71,7 +73,7 @@ export default class Editor {
         this.header.addTo(this.div);
         this.div.appendChild(this.child);
         this.footer.addTo(this.div);
-        this.dock.addTo(this.div);
+        this.addToolbarToUI(this.dock);
         window.addEventListener('resize', this.resize.bind(this));
         for (const tool of this.tools) {
             tool.init?.(this);
@@ -80,6 +82,9 @@ export default class Editor {
     }
     addElementToDock(element) {
         this.dock.addElement(element);
+    }
+    addToolbarToUI(toolbar) {
+        toolbar.addTo(this.div);
     }
     getMaxScale() {
         const { width, height } = this.div.getBoundingClientRect();
