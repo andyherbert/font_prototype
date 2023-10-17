@@ -53,8 +53,8 @@ export default class Editor {
         new CanvasTool(),
         new PixelTool(), // index 1
         new FillTool(),
-        new FontTool(),
         new MoveTool(),
+        new FontTool(),
         new GridTool(),
         new ZoomTool(),
         new UndoTool(),

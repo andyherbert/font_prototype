@@ -2,6 +2,39 @@ import Editor from '../editor/editor.js';
 import { Key, ToolInterface } from '../editor/tools.js';
 
 import Coord from '../editor/coord.js';
+import Button from './button.js';
+
+class QuadButon {
+    private readonly div = document.createElement('div');
+    private readonly buttons: Button[] = [];
+
+    constructor(texts: [string, string, string, string]) {
+        this.div.style.display = 'flex';
+        this.div.style.flexDirection = 'row';
+        this.buttons = texts.map((text): Button => {
+            const button = new Button(text);
+            button.getDiv().style.flexGrow = '1';
+            button.addTo(this.div);
+            return button;
+        });
+    }
+
+    addEventListener(
+        index: number,
+        type: string,
+        listener: EventListener
+    ): void {
+        this.buttons[index]?.addEventListener(type, listener);
+    }
+
+    flash(index: number): void {
+        this.buttons[index]?.flash();
+    }
+
+    getDiv(): HTMLDivElement {
+        return this.div;
+    }
+}
 
 export default class MoveTool implements ToolInterface {
     readonly name = 'Move';
@@ -14,6 +47,36 @@ export default class MoveTool implements ToolInterface {
         { code: 'KeyM', cmd: false, shift: false, repeat: false },
     ];
     private start: Coord | null = null;
+    private button = new Button('Move');
+    private readonly quad = new QuadButon(['Up', 'Down', 'Left', 'Right']);
+
+    init(editor: Editor): void {
+        editor.addElementToDock(this.button.getDiv());
+        this.button.addEventListener('pointerdown', (): void => {
+            editor.setTool(this);
+        });
+        editor.addElementToDock(this.quad.getDiv());
+        this.quad.addEventListener(0, 'pointerdown', (): void => {
+            this.moveUp(editor);
+            this.quad.flash(0);
+        });
+        this.quad.addEventListener(1, 'pointerdown', (): void => {
+            this.moveDown(editor);
+            this.quad.flash(1);
+        });
+        this.quad.addEventListener(2, 'pointerdown', (): void => {
+            this.moveLeft(editor);
+            this.quad.flash(2);
+        });
+        this.quad.addEventListener(3, 'pointerdown', (): void => {
+            this.moveRight(editor);
+            this.quad.flash(3);
+        });
+    }
+
+    focus(_editor: Editor): void {
+        this.button.focus();
+    }
 
     keyDown(key: Key, editor: Editor): boolean {
         switch (key.code) {
@@ -73,6 +136,7 @@ export default class MoveTool implements ToolInterface {
 
     blur(_editor: Editor): void {
         this.start = null;
+        this.button.blur();
     }
 
     private moveUp(editor: Editor): void {

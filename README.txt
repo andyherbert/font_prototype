@@ -10,3 +10,4 @@ fit to screen is '0'.
 pixel brush is 'p'.
 Fill is 'f'.
 undo redo is cmd z, cmd shift-z on mac and ctrl z, ctrl y everywhere else.
+move around with the arrow keys, to press 'm' and use the mouse.
