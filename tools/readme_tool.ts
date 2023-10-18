@@ -2,14 +2,14 @@ import Editor from '../editor/editor.js';
 import Button from './button.js';
 import {
     ToolInterface,
-    ToolBarInterface,
+    WindowInterface,
     black,
     white,
 } from '../editor/tools.js';
-import Toolbar from '../editor/toolbar.js';
+import Window from '../editor/toolbar.js';
 
-class TextToolbar implements ToolBarInterface {
-    private readonly toolbar = new Toolbar(this);
+class TextWindow implements WindowInterface {
+    private readonly window = new Window(this);
     private readonly button: ReadMeButton;
 
     constructor(button: ReadMeButton, url: string) {
@@ -24,27 +24,27 @@ class TextToolbar implements ToolBarInterface {
         pre.style.margin = '0px';
         pre.style.padding = '6px';
         pre.style.overflow = 'auto';
-        this.toolbar.addElement(pre);
+        this.window.addElement(pre);
         fetchText(url).then((text): void => {
             pre.textContent = text;
         });
     }
 
     addTo(div: HTMLDivElement): void {
-        this.toolbar.addTo(div);
+        this.window.addTo(div);
     }
 
     remove(): void {
-        this.toolbar.remove();
+        this.window.remove();
     }
 
     resetPosition(): void {
-        this.toolbar.resetPosition();
+        this.window.resetPosition();
     }
 
     close(): void {
         this.remove();
-        this.button?.toggle();
+        this.button.toggle();
     }
 }
 
@@ -71,14 +71,14 @@ async function fetchText(url: string): Promise<string> {
 export default class ReadMeTool implements ToolInterface {
     name = 'ReadMe';
     private readonly button = new ReadMeButton('ReadMe');
-    private readonly toolbar = new TextToolbar(this.button, './README.txt');
+    private readonly toolbar = new TextWindow(this.button, './README.txt');
 
     init(editor: Editor): void {
         editor.addElementToDock(this.button.getDiv());
         this.button.addEventListener('click', (): void => {
             const toggled = this.button.toggle();
             if (toggled) {
-                editor.addToolbarToUI(this.toolbar);
+                editor.addWindow(this.toolbar);
             } else {
                 this.toolbar.remove();
             }

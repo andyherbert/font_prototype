@@ -1,7 +1,7 @@
 import Coord from './coord.js';
 import { ChangeMode, eventToKey, black, } from './tools.js';
 import InfoBar from './info_bar.js';
-import Toolbar from './toolbar.js';
+import Window from './toolbar.js';
 import UndoTool from '../tools/undo_tool.js';
 import CanvasTool from '../tools/canvas_tool.js';
 import GridTool from '../tools/grid_tool.js';
@@ -12,17 +12,16 @@ import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
 import ReadMeTool from '../tools/readme_tool.js';
 class Dock {
-    toolbar = new Toolbar(this);
+    window = new Window(this);
     constructor() { }
-    // close(): void {}
     addTo(div) {
-        this.toolbar.addTo(div);
+        this.window.addTo(div);
     }
     resetPosition() {
-        this.toolbar.resetPosition();
+        this.window.resetPosition();
     }
     addElement(element) {
-        this.toolbar.addElement(element);
+        this.window.addElement(element);
     }
 }
 export default class Editor {
@@ -73,7 +72,7 @@ export default class Editor {
         this.header.addTo(this.div);
         this.div.appendChild(this.child);
         this.footer.addTo(this.div);
-        this.addToolbarToUI(this.dock);
+        this.addWindow(this.dock);
         window.addEventListener('resize', this.resize.bind(this));
         for (const tool of this.tools) {
             tool.init?.(this);
@@ -83,8 +82,8 @@ export default class Editor {
     addElementToDock(element) {
         this.dock.addElement(element);
     }
-    addToolbarToUI(toolbar) {
-        toolbar.addTo(this.div);
+    addWindow(window) {
+        window.addTo(this.div);
     }
     getMaxScale() {
         const { width, height } = this.div.getBoundingClientRect();

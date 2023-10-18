@@ -3,11 +3,11 @@ import {
     ChangeMode,
     eventToKey,
     ToolInterface,
-    ToolBarInterface,
+    WindowInterface,
     black,
 } from './tools.js';
 import InfoBar from './info_bar.js';
-import Toolbar from './toolbar.js';
+import Window from './toolbar.js';
 
 import UndoTool from '../tools/undo_tool.js';
 import CanvasTool from '../tools/canvas_tool.js';
@@ -19,23 +19,21 @@ import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
 import ReadMeTool from '../tools/readme_tool.js';
 
-class Dock implements ToolBarInterface {
-    private readonly toolbar = new Toolbar(this);
+class Dock implements WindowInterface {
+    private readonly window = new Window(this);
 
     constructor() {}
 
-    // close(): void {}
-
     addTo(div: HTMLDivElement): void {
-        this.toolbar.addTo(div);
+        this.window.addTo(div);
     }
 
     resetPosition(): void {
-        this.toolbar.resetPosition();
+        this.window.resetPosition();
     }
 
     addElement(element: HTMLElement): void {
-        this.toolbar.addElement(element);
+        this.window.addElement(element);
     }
 }
 
@@ -93,7 +91,7 @@ export default class Editor {
         this.div.appendChild(this.child);
         this.footer.addTo(this.div);
 
-        this.addToolbarToUI(this.dock);
+        this.addWindow(this.dock);
 
         window.addEventListener('resize', this.resize.bind(this));
 
@@ -107,8 +105,8 @@ export default class Editor {
         this.dock.addElement(element);
     }
 
-    addToolbarToUI(toolbar: ToolBarInterface): void {
-        toolbar.addTo(this.div);
+    addWindow(window: WindowInterface): void {
+        window.addTo(this.div);
     }
 
     getMaxScale(): number {

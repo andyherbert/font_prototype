@@ -1,6 +1,6 @@
 import Coord from './coord.js';
 import { black, white } from './tools.js';
-export default class Toolbar {
+export default class Window {
     div = document.createElement('div');
     container = document.createElement('div');
     dragging = null;

@@ -1,14 +1,14 @@
 import Coord from './coord.js';
-import { ToolBarInterface as ToolbarInterface, black, white } from './tools.js';
+import { WindowInterface, black, white } from './tools.js';
 
-export default class Toolbar {
+export default class Window {
     private readonly div = document.createElement('div');
     private readonly container = document.createElement('div');
     private dragging: Coord | null = null;
     private headerHeight = 16;
-    private tool: ToolbarInterface;
+    private tool: WindowInterface;
 
-    constructor(tool: ToolbarInterface) {
+    constructor(tool: WindowInterface) {
         this.tool = tool;
         this.div.style.cursor = 'pointer';
         this.div.style.position = 'absolute';

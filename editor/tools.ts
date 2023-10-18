@@ -48,7 +48,7 @@ export interface ToolInterface {
     scaled?(editor: Editor): void;
 }
 
-export interface ToolBarInterface {
+export interface WindowInterface {
     addTo(div: HTMLDivElement): void;
     resetPosition(): void;
     close?(): void;

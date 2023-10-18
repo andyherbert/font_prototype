@@ -1,8 +1,8 @@
 import Button from './button.js';
 import { black, white, } from '../editor/tools.js';
-import Toolbar from '../editor/toolbar.js';
-class TextToolbar {
-    toolbar = new Toolbar(this);
+import Window from '../editor/toolbar.js';
+class TextWindow {
+    window = new Window(this);
     button;
     constructor(button, url) {
         this.button = button;
@@ -16,23 +16,23 @@ class TextToolbar {
         pre.style.margin = '0px';
         pre.style.padding = '6px';
         pre.style.overflow = 'auto';
-        this.toolbar.addElement(pre);
+        this.window.addElement(pre);
         fetchText(url).then((text) => {
             pre.textContent = text;
         });
     }
     addTo(div) {
-        this.toolbar.addTo(div);
+        this.window.addTo(div);
     }
     remove() {
-        this.toolbar.remove();
+        this.window.remove();
     }
     resetPosition() {
-        this.toolbar.resetPosition();
+        this.window.resetPosition();
     }
     close() {
         this.remove();
-        this.button?.toggle();
+        this.button.toggle();
     }
 }
 class ReadMeButton extends Button {
@@ -56,13 +56,13 @@ async function fetchText(url) {
 export default class ReadMeTool {
     name = 'ReadMe';
     button = new ReadMeButton('ReadMe');
-    toolbar = new TextToolbar(this.button, './README.txt');
+    toolbar = new TextWindow(this.button, './README.txt');
     init(editor) {
         editor.addElementToDock(this.button.getDiv());
         this.button.addEventListener('click', () => {
             const toggled = this.button.toggle();
             if (toggled) {
-                editor.addToolbarToUI(this.toolbar);
+                editor.addWindow(this.toolbar);
             }
             else {
                 this.toolbar.remove();
