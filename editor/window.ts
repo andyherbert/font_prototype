@@ -23,20 +23,20 @@ export class Window {
         const from = white.toAlphaString(0.5);
         const to = white.toAlphaString(0.4);
         this.div.style.backgroundImage = `linear-gradient(to bottom, ${from}, ${to}`;
-        this.div.style.backdropFilter = 'blur(10px)';
+        this.div.style.backdropFilter = 'blur(24px)';
         // @ts-ignore
-        this.div.style.webkitBackdropFilter = 'blur(10px)';
-        this.div.style.borderRadius = '2px';
+        this.div.style.webkitBackdropFilter = 'blur(24px)';
+        this.div.style.borderRadius = '4px 4px 0px 0px';
         this.div.style.border = `1px dotted ${white.toString()}`;
         this.div.style.outline = `1px solid ${black.toString()}`;
         if (tool.close != null) {
             const close = document.createElement('div');
-            close.style.margin = '4px';
+            close.style.margin = '6px';
             close.style.borderRadius = '2px';
             close.style.border = `1px solid ${white.toAlphaString(0.6)}`;
             close.style.backgroundColor = black.toString();
-            close.style.width = '8px';
-            close.style.height = '8px';
+            close.style.width = '13px';
+            close.style.height = '13px';
             close.addEventListener('click', this.close.bind(this));
             close.addEventListener('pointerdown', (_event): void => {
                 close.style.backgroundColor = white.toString();
@@ -48,7 +48,7 @@ export class Window {
             this.container.style.margin = '4px';
         } else {
             const spacer = document.createElement('div');
-            spacer.style.height = '14px';
+            spacer.style.height = '22px';
             spacer.style.pointerEvents = 'none';
             this.div.appendChild(spacer);
         }
