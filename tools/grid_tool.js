@@ -10,9 +10,9 @@ export default class GridTool {
     baseLine = 0;
     meanLine = 0;
     gapLine = 0;
-    baseLineVisible = true;
-    meanLineVisible = true;
-    gapLineVisible = true;
+    baseLineVisible = false;
+    meanLineVisible = false;
+    gapLineVisible = false;
     gridVisible = true;
     solidHorizontalLineWhite = null;
     solidVerticalLineWhite = null;

@@ -20,9 +20,9 @@ export default class GridTool implements ToolInterface {
     private baseLine: number = 0;
     private meanLine: number = 0;
     private gapLine: number = 0;
-    private baseLineVisible = true;
-    private meanLineVisible = true;
-    private gapLineVisible = true;
+    private baseLineVisible = false;
+    private meanLineVisible = false;
+    private gapLineVisible = false;
     private gridVisible = true;
     private solidHorizontalLineWhite: ImageData | null = null;
     private solidVerticalLineWhite: ImageData | null = null;
