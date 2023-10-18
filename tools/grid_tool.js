@@ -314,5 +314,8 @@ export default class GridTool {
     allChange(_from, _mode, editor) {
         this.redraw(editor);
     }
+    setCode(_code, editor) {
+        this.redraw(editor);
+    }
 }
 //# sourceMappingURL=grid_tool.js.map

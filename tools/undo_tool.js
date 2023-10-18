@@ -1,5 +1,10 @@
 import { Button } from '../editor/button.js';
 import { ChangeMode, isMac } from '../editor/tools.js';
+class Buffers {
+    undo = new Array();
+    redo = new Array();
+    change = new Map();
+}
 export default class UndoTool {
     name = 'Undo';
     shortcuts = isMac
@@ -11,11 +16,16 @@ export default class UndoTool {
             { code: 'KeyZ', cmd: true, shift: false, repeat: true },
             { code: 'KeyY', cmd: true, shift: false, repeat: true },
         ];
-    changeBuffer = new Map();
-    undoBuffer = new Array();
-    redoBuffer = new Array();
+    buffers;
+    currentCode = 0;
     undoButton = new Button('Undo');
     redoButton = new Button('Redo');
+    constructor() {
+        this.buffers = new Array();
+        for (let i = 0; i < 256; i++) {
+            this.buffers.push(new Buffers());
+        }
+    }
     init(editor) {
         editor.addElementToDock(this.undoButton.getDiv());
         editor.addElementToDock(this.redoButton.getDiv());
@@ -38,14 +48,14 @@ export default class UndoTool {
         }
     }
     doUndo(editor) {
-        const buffer = this.undoBuffer.pop();
+        const buffer = this.buffers[this.currentCode].undo.pop();
         if (buffer != null) {
             this.processChangeBuffer(editor, buffer, ChangeMode.Undo);
             this.undoButton.flash();
         }
     }
     doRedo(editor) {
-        const buffer = this.redoBuffer.pop();
+        const buffer = this.buffers[this.currentCode].redo.pop();
         if (buffer != null) {
             this.processChangeBuffer(editor, buffer, ChangeMode.Redo);
             this.redoButton.flash();
@@ -71,51 +81,58 @@ export default class UndoTool {
         return false;
     }
     change(coord, from, editor) {
-        if (!this.changeBuffer.has(coord.toIndex(editor.width))) {
-            this.changeBuffer.set(coord.toIndex(editor.width), [coord, from]);
+        const buffer = this.buffers[this.currentCode];
+        if (!buffer.change.has(coord.toIndex(editor.width))) {
+            buffer.change.set(coord.toIndex(editor.width), [coord, from]);
         }
     }
     clearRedoBuffer() {
-        if (this.redoBuffer.length > 0) {
-            this.redoBuffer = new Array();
+        const buffer = this.buffers[this.currentCode];
+        if (buffer.redo.length > 0) {
+            buffer.redo = new Array();
         }
     }
     allChange(from, mode, _editor) {
+        const buffer = this.buffers[this.currentCode];
         switch (mode) {
             case ChangeMode.Edit: {
-                this.undoBuffer.push(from);
+                buffer.undo.push(from);
                 this.clearRedoBuffer();
                 break;
             }
             case ChangeMode.Undo: {
-                this.redoBuffer.push(from);
+                buffer.redo.push(from);
                 break;
             }
             case ChangeMode.Redo: {
-                this.undoBuffer.push(from);
+                buffer.undo.push(from);
                 break;
             }
         }
     }
-    endChange(_editor, mode) {
-        if (this.changeBuffer.size > 0) {
+    endChange(mode, _editor) {
+        const buffer = this.buffers[this.currentCode];
+        if (buffer.change.size > 0) {
             switch (mode) {
                 case ChangeMode.Edit: {
-                    this.undoBuffer.push(this.changeBuffer);
+                    buffer.undo.push(buffer.change);
                     this.clearRedoBuffer();
                     break;
                 }
                 case ChangeMode.Undo: {
-                    this.redoBuffer.push(this.changeBuffer);
+                    buffer.redo.push(buffer.change);
                     break;
                 }
                 case ChangeMode.Redo: {
-                    this.undoBuffer.push(this.changeBuffer);
+                    buffer.undo.push(buffer.change);
                     break;
                 }
             }
-            this.changeBuffer = new Map();
+            buffer.change = new Map();
         }
+    }
+    setCode(code, _editor) {
+        this.currentCode = code;
     }
 }
 //# sourceMappingURL=undo_tool.js.map

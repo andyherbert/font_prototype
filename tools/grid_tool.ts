@@ -375,4 +375,8 @@ export default class GridTool implements ToolInterface {
     allChange(_from: boolean[], _mode: ChangeMode, editor: Editor): void {
         this.redraw(editor);
     }
+
+    setCode(_code: number, editor: Editor): void {
+        this.redraw(editor);
+    }
 }

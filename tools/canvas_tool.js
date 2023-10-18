@@ -50,5 +50,8 @@ export default class CanvasTool {
     allChange(_from, _undo, editor) {
         this.redraw(editor);
     }
+    setCode(_code, editor) {
+        this.redraw(editor);
+    }
 }
 //# sourceMappingURL=canvas_tool.js.map

@@ -65,4 +65,8 @@ export default class CanvasTool implements ToolInterface {
     allChange(_from: boolean[], _undo: ChangeMode, editor: Editor): void {
         this.redraw(editor);
     }
+
+    setCode(_code: number, editor: Editor): void {
+        this.redraw(editor);
+    }
 }

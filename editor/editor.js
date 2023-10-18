@@ -1,5 +1,5 @@
 import Coord from './coord.js';
-import { ChangeMode, eventToKey, black } from './tools.js';
+import { ChangeMode, eventToKey, black, white, } from './tools.js';
 import InfoBar from './info_bar.js';
 import { Window } from './window.js';
 import UndoTool from '../tools/undo_tool.js';
@@ -28,6 +28,8 @@ export default class Editor {
     width;
     height;
     data;
+    rgbaData;
+    currentCode = 0;
     div = document.createElement('div');
     header = new InfoBar();
     child = document.createElement('div');
@@ -49,8 +51,18 @@ export default class Editor {
     constructor(width, height) {
         this.width = width;
         this.height = height;
-        this.data = new Array(width * height);
-        this.data.fill(false);
+        this.data = new Array(256);
+        this.rgbaData = new Array(256);
+        const rgbaData = new Uint8ClampedArray(width * height * 4);
+        for (let i = 0; i < rgbaData.length; i += 4) {
+            rgbaData.set(black.rgbaData, i);
+        }
+        for (let i = 0; i < 256; i += 1) {
+            const pixels = new Array(width * height);
+            pixels.fill(false);
+            this.data[i] = pixels;
+            this.rgbaData[i] = new Uint8ClampedArray(rgbaData);
+        }
         this.div.style.backgroundColor = black.toString();
         this.div.style.display = 'flex';
         this.div.style.flexDirection = 'column';
@@ -78,6 +90,7 @@ export default class Editor {
             tool.init?.(this);
         }
         this.focusTool(1); // Pixel tool
+        this.setCode(65); // 'A'
     }
     addElementToDock(element) {
         this.dock.addElement(element);
@@ -183,29 +196,26 @@ export default class Editor {
         let index = 0;
         for (let y = 0; y < this.height; y += 1) {
             for (let x = 0; x < this.width; x += 1) {
-                const pixel = this.data[index];
-                if (pixel != null) {
-                    yield [new Coord(x, y), pixel];
-                }
+                const pixel = this.data[this.currentCode][index];
+                yield [new Coord(x, y), pixel];
                 index += 1;
             }
         }
     }
     getPixel(coord) {
         const index = coord.toIndex(this.width);
-        return this.data[index];
+        return this.data[this.currentCode][index];
     }
     setPixel(coord, value) {
         if (coord.withinBounds(this.width, this.height)) {
             const index = coord.toIndex(this.width);
-            if (this.data[index] != value) {
+            if (this.data[this.currentCode][index] != value) {
+                const from = this.data[this.currentCode][index];
+                this.data[this.currentCode][index] = value;
+                this.rgbaData[this.currentCode].set(value ? white.rgbaData : black.rgbaData, index * 4);
                 for (const tool of this.tools) {
-                    const pixel = this.data[index];
-                    if (pixel != null) {
-                        tool.change?.(coord, pixel, this);
-                    }
+                    tool.change?.(coord, from, this);
                 }
-                this.data[index] = value;
             }
         }
     }
@@ -293,19 +303,37 @@ export default class Editor {
         this.dock.resetPosition();
     }
     getData() {
-        return [...this.data];
+        return [...this.data[this.currentCode]];
+    }
+    getRgbaData() {
+        return this.rgbaData[this.currentCode];
     }
     setData(data, mode = ChangeMode.Edit) {
         const from = this.getData();
-        this.data = [...data];
+        this.data[this.currentCode] = [...data];
+        for (const [i, pixel] of data.entries()) {
+            this.rgbaData[this.currentCode].set(pixel ? white.rgbaData : black.rgbaData, i * 4);
+        }
         for (const tool of this.tools) {
             tool.allChange?.(from, mode, this);
         }
     }
     endChange(mode = ChangeMode.Edit) {
         for (const tool of this.tools) {
-            tool.endChange?.(this, mode);
+            tool.endChange?.(mode, this);
         }
+    }
+    getCode() {
+        return this.currentCode;
+    }
+    setCode(code) {
+        this.currentCode = code;
+        for (const tool of this.tools) {
+            tool.setCode?.(code, this);
+        }
+    }
+    hasAnyPixels() {
+        return this.data[this.currentCode].some((pixel) => pixel);
     }
     resize() {
         const max = this.getMaxScale();

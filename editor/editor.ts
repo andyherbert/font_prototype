@@ -1,5 +1,11 @@
 import Coord from './coord.js';
-import { ChangeMode, eventToKey, ToolInterface, black } from './tools.js';
+import {
+    ChangeMode,
+    eventToKey,
+    ToolInterface,
+    black,
+    white,
+} from './tools.js';
 import InfoBar from './info_bar.js';
 import { Window, WindowInterface } from './window.js';
 
@@ -34,7 +40,9 @@ class Dock implements WindowInterface {
 export default class Editor {
     readonly width: number;
     readonly height: number;
-    private data: Array<boolean>;
+    private data: Array<Array<boolean>>;
+    private rgbaData: Array<Uint8ClampedArray>;
+    private currentCode = 0;
     private readonly div = document.createElement('div');
     private readonly header = new InfoBar();
     private readonly child = document.createElement('div');
@@ -57,9 +65,18 @@ export default class Editor {
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
-        this.data = new Array<boolean>(width * height);
-        this.data.fill(false);
-
+        this.data = new Array<Array<boolean>>(256);
+        this.rgbaData = new Array<Uint8ClampedArray>(256);
+        const rgbaData = new Uint8ClampedArray(width * height * 4);
+        for (let i = 0; i < rgbaData.length; i += 4) {
+            rgbaData.set(black.rgbaData, i);
+        }
+        for (let i = 0; i < 256; i += 1) {
+            const pixels = new Array<boolean>(width * height);
+            pixels.fill(false);
+            this.data[i] = pixels;
+            this.rgbaData[i] = new Uint8ClampedArray(rgbaData);
+        }
         this.div.style.backgroundColor = black.toString();
         this.div.style.display = 'flex';
         this.div.style.flexDirection = 'column';
@@ -93,6 +110,7 @@ export default class Editor {
             tool.init?.(this);
         }
         this.focusTool(1); // Pixel tool
+        this.setCode(65); // 'A'
     }
 
     addElementToDock(element: HTMLElement): void {
@@ -217,10 +235,8 @@ export default class Editor {
         let index = 0;
         for (let y = 0; y < this.height; y += 1) {
             for (let x = 0; x < this.width; x += 1) {
-                const pixel = this.data[index];
-                if (pixel != null) {
-                    yield [new Coord(x, y), pixel];
-                }
+                const pixel = this.data[this.currentCode]![index]!;
+                yield [new Coord(x, y), pixel];
                 index += 1;
             }
         }
@@ -228,20 +244,22 @@ export default class Editor {
 
     getPixel(coord: Coord): boolean | undefined {
         const index = coord.toIndex(this.width);
-        return this.data[index];
+        return this.data[this.currentCode]![index]!;
     }
 
     setPixel(coord: Coord, value: boolean) {
         if (coord.withinBounds(this.width, this.height)) {
             const index = coord.toIndex(this.width);
-            if (this.data[index] != value) {
+            if (this.data[this.currentCode]![index] != value) {
+                const from = this.data[this.currentCode]![index]!;
+                this.data[this.currentCode]![index]! = value;
+                this.rgbaData[this.currentCode]!.set(
+                    value ? white.rgbaData : black.rgbaData,
+                    index * 4
+                );
                 for (const tool of this.tools) {
-                    const pixel = this.data[index];
-                    if (pixel != null) {
-                        tool.change?.(coord, pixel, this);
-                    }
+                    tool.change?.(coord, from, this);
                 }
-                this.data[index] = value;
             }
         }
     }
@@ -340,12 +358,22 @@ export default class Editor {
     }
 
     getData(): Array<boolean> {
-        return [...this.data];
+        return [...this.data[this.currentCode]!];
+    }
+
+    getRgbaData(): Uint8ClampedArray {
+        return this.rgbaData[this.currentCode]!;
     }
 
     setData(data: Array<boolean>, mode = ChangeMode.Edit): void {
         const from = this.getData();
-        this.data = [...data];
+        this.data[this.currentCode] = [...data];
+        for (const [i, pixel] of data.entries()) {
+            this.rgbaData[this.currentCode]!.set(
+                pixel ? white.rgbaData : black.rgbaData,
+                i * 4
+            );
+        }
         for (const tool of this.tools) {
             tool.allChange?.(from, mode, this);
         }
@@ -353,8 +381,23 @@ export default class Editor {
 
     endChange(mode = ChangeMode.Edit): void {
         for (const tool of this.tools) {
-            tool.endChange?.(this, mode);
+            tool.endChange?.(mode, this);
         }
+    }
+
+    getCode(): number {
+        return this.currentCode;
+    }
+
+    setCode(code: number): void {
+        this.currentCode = code;
+        for (const tool of this.tools) {
+            tool.setCode?.(code, this);
+        }
+    }
+
+    hasAnyPixels(): boolean {
+        return this.data[this.currentCode]!.some((pixel) => pixel);
     }
 
     private resize(): void {

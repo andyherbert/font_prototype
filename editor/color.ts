@@ -4,11 +4,11 @@ export default class Color {
     readonly blue: number;
     readonly rgbaData: Uint8ClampedArray;
 
-    constructor(red: number, green: number, blue: number) {
+    constructor(red: number, green: number, blue: number, alpha = 255) {
         this.red = red;
         this.green = green;
         this.blue = blue;
-        this.rgbaData = new Uint8ClampedArray([red, green, blue, 255]);
+        this.rgbaData = new Uint8ClampedArray([red, green, blue, alpha]);
     }
 
     toString(): string {

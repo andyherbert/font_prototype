@@ -3,11 +3,11 @@ export default class Color {
     green;
     blue;
     rgbaData;
-    constructor(red, green, blue) {
+    constructor(red, green, blue, alpha = 255) {
         this.red = red;
         this.green = green;
         this.blue = blue;
-        this.rgbaData = new Uint8ClampedArray([red, green, blue, 255]);
+        this.rgbaData = new Uint8ClampedArray([red, green, blue, alpha]);
     }
     toString() {
         return `rgb(${this.red}, ${this.green}, ${this.blue})`;

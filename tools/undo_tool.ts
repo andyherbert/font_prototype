@@ -3,6 +3,12 @@ import Coord from '../editor/coord.js';
 import Editor from '../editor/editor.js';
 import { ChangeMode, isMac, Key, ToolInterface } from '../editor/tools.js';
 
+class Buffers {
+    undo: Array<Map<number, [Coord, boolean]> | Array<boolean>> = new Array();
+    redo: Array<Map<number, [Coord, boolean]> | Array<boolean>> = new Array();
+    change: Map<number, [Coord, boolean]> = new Map();
+}
+
 export default class UndoTool implements ToolInterface {
     readonly name = 'Undo';
     readonly shortcuts = isMac
@@ -14,13 +20,17 @@ export default class UndoTool implements ToolInterface {
               { code: 'KeyZ', cmd: true, shift: false, repeat: true },
               { code: 'KeyY', cmd: true, shift: false, repeat: true },
           ];
-    private changeBuffer: Map<number, [Coord, boolean]> = new Map();
-    private undoBuffer: Array<Map<number, [Coord, boolean]> | Array<boolean>> =
-        new Array();
-    private redoBuffer: Array<Map<number, [Coord, boolean]> | Array<boolean>> =
-        new Array();
+    private buffers: Array<Buffers>;
+    private currentCode = 0;
     private readonly undoButton = new Button('Undo');
     private readonly redoButton = new Button('Redo');
+
+    constructor() {
+        this.buffers = new Array();
+        for (let i = 0; i < 256; i++) {
+            this.buffers.push(new Buffers());
+        }
+    }
 
     init(editor: Editor): void {
         editor.addElementToDock(this.undoButton.getDiv());
@@ -49,7 +59,7 @@ export default class UndoTool implements ToolInterface {
     }
 
     private doUndo(editor: Editor): void {
-        const buffer = this.undoBuffer.pop();
+        const buffer = this.buffers[this.currentCode]!.undo.pop();
         if (buffer != null) {
             this.processChangeBuffer(editor, buffer, ChangeMode.Undo);
             this.undoButton.flash();
@@ -57,7 +67,7 @@ export default class UndoTool implements ToolInterface {
     }
 
     private doRedo(editor: Editor): void {
-        const buffer = this.redoBuffer.pop();
+        const buffer = this.buffers[this.currentCode]!.redo.pop();
         if (buffer != null) {
             this.processChangeBuffer(editor, buffer, ChangeMode.Redo);
             this.redoButton.flash();
@@ -82,53 +92,61 @@ export default class UndoTool implements ToolInterface {
     }
 
     change(coord: Coord, from: boolean, editor: Editor): void {
-        if (!this.changeBuffer.has(coord.toIndex(editor.width))) {
-            this.changeBuffer.set(coord.toIndex(editor.width), [coord, from]);
+        const buffer = this.buffers[this.currentCode]!;
+        if (!buffer.change.has(coord.toIndex(editor.width))) {
+            buffer.change.set(coord.toIndex(editor.width), [coord, from]);
         }
     }
 
     private clearRedoBuffer(): void {
-        if (this.redoBuffer.length > 0) {
-            this.redoBuffer = new Array();
+        const buffer = this.buffers[this.currentCode]!;
+        if (buffer.redo.length > 0) {
+            buffer.redo = new Array();
         }
     }
 
     allChange(from: boolean[], mode: ChangeMode, _editor: Editor): void {
+        const buffer = this.buffers[this.currentCode]!;
         switch (mode) {
             case ChangeMode.Edit: {
-                this.undoBuffer.push(from);
+                buffer.undo.push(from);
                 this.clearRedoBuffer();
                 break;
             }
             case ChangeMode.Undo: {
-                this.redoBuffer.push(from);
+                buffer.redo.push(from);
                 break;
             }
             case ChangeMode.Redo: {
-                this.undoBuffer.push(from);
+                buffer.undo.push(from);
                 break;
             }
         }
     }
 
-    endChange(_editor: Editor, mode: ChangeMode): void {
-        if (this.changeBuffer.size > 0) {
+    endChange(mode: ChangeMode, _editor: Editor): void {
+        const buffer = this.buffers[this.currentCode]!;
+        if (buffer.change.size > 0) {
             switch (mode) {
                 case ChangeMode.Edit: {
-                    this.undoBuffer.push(this.changeBuffer);
+                    buffer.undo.push(buffer.change);
                     this.clearRedoBuffer();
                     break;
                 }
                 case ChangeMode.Undo: {
-                    this.redoBuffer.push(this.changeBuffer);
+                    buffer.redo.push(buffer.change);
                     break;
                 }
                 case ChangeMode.Redo: {
-                    this.undoBuffer.push(this.changeBuffer);
+                    buffer.undo.push(buffer.change);
                     break;
                 }
             }
-            this.changeBuffer = new Map();
+            buffer!.change = new Map();
         }
+    }
+
+    setCode(code: number, _editor: Editor): void {
+        this.currentCode = code;
     }
 }
