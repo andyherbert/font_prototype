@@ -1,14 +1,12 @@
 import Coord from './coord.js';
-import { WindowInterface, black, white } from './tools.js';
-
-export default class Window {
-    private readonly div = document.createElement('div');
-    private readonly container = document.createElement('div');
-    private dragging: Coord | null = null;
-    private headerHeight = 16;
-    private tool: WindowInterface;
-
-    constructor(tool: WindowInterface) {
+import { black, white } from './tools.js';
+export class Window {
+    div = document.createElement('div');
+    container = document.createElement('div');
+    dragging = null;
+    headerHeight = 16;
+    tool;
+    constructor(tool) {
         this.tool = tool;
         this.div.style.cursor = 'pointer';
         this.div.style.position = 'absolute';
@@ -32,15 +30,16 @@ export default class Window {
             close.style.width = '8px';
             close.style.height = '8px';
             close.addEventListener('click', this.close.bind(this));
-            close.addEventListener('pointerdown', (_event): void => {
+            close.addEventListener('pointerdown', (_event) => {
                 close.style.backgroundColor = white.toString();
             });
-            close.addEventListener('pointerleave', (_event): void => {
+            close.addEventListener('pointerleave', (_event) => {
                 close.style.backgroundColor = black.toString();
             });
             this.div.appendChild(close);
             this.container.style.margin = '4px';
-        } else {
+        }
+        else {
             const spacer = document.createElement('div');
             spacer.style.height = '14px';
             spacer.style.pointerEvents = 'none';
@@ -54,75 +53,55 @@ export default class Window {
         this.container.style.flexDirection = 'column';
         this.div.appendChild(this.container);
     }
-
-    addElement(canvas: HTMLElement): void {
+    addElement(canvas) {
         this.container.appendChild(canvas);
     }
-
-    close(): void {
+    close() {
         this.tool.close?.();
     }
-
-    private pointerDown(event: PointerEvent): void {
+    pointerDown(event) {
         if (event.target == this.div && this.div.parentElement != null) {
             if (this.div.parentElement.lastChild != this.div) {
                 this.div.parentElement.appendChild(this.div);
             }
             const { x, y } = this.div.getBoundingClientRect();
-            this.dragging = new Coord(event.clientX, event.clientY).minus(
-                new Coord(x, y)
-            );
+            this.dragging = new Coord(event.clientX, event.clientY).minus(new Coord(x, y));
             this.div.setPointerCapture(event.pointerId);
         }
     }
-
-    private pointerMove(event: PointerEvent): void {
+    pointerMove(event) {
         if (this.dragging != null && this.div.parentElement != null) {
-            const coord = new Coord(event.clientX, event.clientY).minus(
-                this.dragging
-            );
+            const coord = new Coord(event.clientX, event.clientY).minus(this.dragging);
             const parentRect = this.div.parentElement.getBoundingClientRect();
             const divRect = this.div.getBoundingClientRect();
-            this.setPosition(
-                coord.limit(
-                    Math.floor(-divRect.width / 2),
-                    Math.floor(-this.headerHeight / 2),
-                    parentRect.width - Math.floor(divRect.width / 2),
-                    parentRect.height - Math.floor(this.headerHeight / 2)
-                )
-            );
+            this.setPosition(coord.limit(Math.floor(-divRect.width / 2), Math.floor(-this.headerHeight / 2), parentRect.width - Math.floor(divRect.width / 2), parentRect.height - Math.floor(this.headerHeight / 2)));
         }
     }
-
-    private pointerUp(event: PointerEvent): void {
+    pointerUp(event) {
         if (event.target == this.div) {
             this.dragging = null;
             this.div.releasePointerCapture(event.pointerId);
         }
     }
-
-    private setPosition(coord: Coord): void {
+    setPosition(coord) {
         this.div.style.left = `${coord.x}px`;
         this.div.style.top = `${coord.y}px`;
     }
-
-    addTo(element: HTMLElement): void {
+    addTo(element) {
         element.appendChild(this.div);
     }
-
-    remove(): void {
+    remove() {
         if (this.div.parentElement != null) {
             this.div.parentElement.removeChild(this.div);
         }
     }
-
-    resetPosition(): void {
+    resetPosition() {
         if (this.div.parentElement != null) {
-            const { width, height } =
-                this.div.parentElement.getBoundingClientRect();
+            const { width, height } = this.div.parentElement.getBoundingClientRect();
             const x = Math.floor(width / 10);
             const y = Math.floor(height / 10);
             this.setPosition(new Coord(x, y));
         }
     }
 }
+//# sourceMappingURL=window.js.map

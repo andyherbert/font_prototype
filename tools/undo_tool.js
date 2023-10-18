@@ -1,4 +1,4 @@
-import Button from './button.js';
+import { Button } from '../editor/button.js';
 import { ChangeMode, isMac } from '../editor/tools.js';
 export default class UndoTool {
     name = 'Undo';

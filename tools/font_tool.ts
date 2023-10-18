@@ -1,4 +1,7 @@
+import Editor from '../editor/editor.js';
 import { ToolInterface } from '../editor/tools.js';
+import { ToggleButton } from '../editor/button.js';
+import { Window, WindowInterface } from '../editor/window.js';
 
 const controlCharacters = [
     'Null',
@@ -404,6 +407,48 @@ const windows1252 = [
 // console.log(iso8859_1.length);
 // console.log(iso8859_1.length);
 
+class FontWindow implements WindowInterface {
+    private readonly window = new Window(this);
+    private readonly button: ToggleButton;
+    private readonly div = document.createElement('div');
+
+    constructor(button: ToggleButton) {
+        this.button = button;
+        this.div.style.width = '640px';
+        this.div.style.height = '400px';
+        this.window.addElement(this.div);
+    }
+
+    addTo(div: HTMLDivElement): void {
+        this.window.addTo(div);
+    }
+
+    resetPosition(): void {
+        this.window.resetPosition();
+    }
+
+    close(): void {
+        this.window.remove();
+        this.button.setToggle(false);
+    }
+}
+
 export default class FontTool implements ToolInterface {
-    name = 'Font2';
+    name = 'Font';
+    private readonly button = new ToggleButton('Font');
+    private readonly window = new FontWindow(this.button);
+
+    init(editor: Editor): void {
+        this.button.addEventListener('pointerdown', () => {
+            const toggled = this.button.getToggle();
+            if (toggled) {
+                this.window.close();
+                this.button.setToggle(false);
+            } else {
+                editor.addWindow(this.window);
+                this.button.setToggle(true);
+            }
+        });
+        // editor.addElementToDock(this.button.getDiv());
+    }
 }

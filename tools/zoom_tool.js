@@ -1,4 +1,4 @@
-import Button from './button.js';
+import { Button } from '../editor/button.js';
 export default class ZoomTool {
     name = 'Pixel';
     shortcuts = [

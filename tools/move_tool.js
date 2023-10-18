@@ -1,28 +1,5 @@
 import Coord from '../editor/coord.js';
-import Button from './button.js';
-class QuadButon {
-    div = document.createElement('div');
-    buttons = [];
-    constructor(texts) {
-        this.div.style.display = 'flex';
-        this.div.style.flexDirection = 'row';
-        this.buttons = texts.map((text) => {
-            const button = new Button(text);
-            button.getDiv().style.flexGrow = '1';
-            button.addTo(this.div);
-            return button;
-        });
-    }
-    addEventListener(index, type, listener) {
-        this.buttons[index]?.addEventListener(type, listener);
-    }
-    flash(index) {
-        this.buttons[index]?.flash();
-    }
-    getDiv() {
-        return this.div;
-    }
-}
+import { Button, QuadButton } from '../editor/button.js';
 export default class MoveTool {
     name = 'Move';
     cursor = 'grab';
@@ -35,7 +12,7 @@ export default class MoveTool {
     ];
     start = null;
     button = new Button('Move');
-    quad = new QuadButon(['Up', 'Down', 'Left', 'Right']);
+    quad = new QuadButton(['Up', 'Down', 'Left', 'Right']);
     init(editor) {
         editor.addElementToDock(this.button.getDiv());
         this.button.addEventListener('pointerdown', () => {

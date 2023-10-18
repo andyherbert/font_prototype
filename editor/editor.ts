@@ -1,13 +1,7 @@
 import Coord from './coord.js';
-import {
-    ChangeMode,
-    eventToKey,
-    ToolInterface,
-    WindowInterface,
-    black,
-} from './tools.js';
+import { ChangeMode, eventToKey, ToolInterface, black } from './tools.js';
 import InfoBar from './info_bar.js';
-import Window from './toolbar.js';
+import { Window, WindowInterface } from './window.js';
 
 import UndoTool from '../tools/undo_tool.js';
 import CanvasTool from '../tools/canvas_tool.js';

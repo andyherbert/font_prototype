@@ -1,3 +1,5 @@
+import { ToggleButton } from '../editor/button.js';
+import { Window } from '../editor/window.js';
 const controlCharacters = [
     'Null',
     'Start of Heading',
@@ -397,7 +399,44 @@ const windows1252 = [
 ];
 // console.log(iso8859_1.length);
 // console.log(iso8859_1.length);
+class FontWindow {
+    window = new Window(this);
+    button;
+    div = document.createElement('div');
+    constructor(button) {
+        this.button = button;
+        this.div.style.width = '640px';
+        this.div.style.height = '400px';
+        this.window.addElement(this.div);
+    }
+    addTo(div) {
+        this.window.addTo(div);
+    }
+    resetPosition() {
+        this.window.resetPosition();
+    }
+    close() {
+        this.window.remove();
+        this.button.setToggle(false);
+    }
+}
 export default class FontTool {
-    name = 'Font2';
+    name = 'Font';
+    button = new ToggleButton('Font');
+    window = new FontWindow(this.button);
+    init(editor) {
+        this.button.addEventListener('pointerdown', () => {
+            const toggled = this.button.getToggle();
+            if (toggled) {
+                this.window.close();
+                this.button.setToggle(false);
+            }
+            else {
+                editor.addWindow(this.window);
+                this.button.setToggle(true);
+            }
+        });
+        // editor.addElementToDock(this.button.getDiv());
+    }
 }
 //# sourceMappingURL=font_tool.js.map

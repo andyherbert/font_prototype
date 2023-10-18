@@ -1,4 +1,4 @@
-import Button from './button.js';
+import { Button } from '../editor/button.js';
 import Coord from '../editor/coord.js';
 import Editor from '../editor/editor.js';
 import { ToolInterface } from '../editor/tools.js';

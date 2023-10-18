@@ -1,18 +1,13 @@
 import Editor from '../editor/editor.js';
-import Button from './button.js';
-import {
-    ToolInterface,
-    WindowInterface,
-    black,
-    white,
-} from '../editor/tools.js';
-import Window from '../editor/toolbar.js';
+import { ToggleButton } from '../editor/button.js';
+import { ToolInterface, black, white } from '../editor/tools.js';
+import { Window, WindowInterface } from '../editor/window.js';
 
 class TextWindow implements WindowInterface {
     private readonly window = new Window(this);
-    private readonly button: ReadMeButton;
+    private readonly button: ToggleButton;
 
-    constructor(button: ReadMeButton, url: string) {
+    constructor(button: ToggleButton, url: string) {
         this.button = button;
         const pre = document.createElement('pre');
         pre.style.width = '640px';
@@ -34,32 +29,13 @@ class TextWindow implements WindowInterface {
         this.window.addTo(div);
     }
 
-    remove(): void {
-        this.window.remove();
-    }
-
     resetPosition(): void {
         this.window.resetPosition();
     }
 
     close(): void {
-        this.remove();
-        this.button.toggle();
-    }
-}
-
-class ReadMeButton extends Button {
-    private toggled = false;
-
-    toggle(): boolean {
-        this.toggled = !this.toggled;
-        if (this.toggled) {
-            this.div.style.backgroundColor = white.toAlphaString(0.1);
-            this.div.style.textShadow = `none`;
-        } else {
-            this.blur();
-        }
-        return this.toggled;
+        this.window.remove();
+        this.button.setToggle(false);
     }
 }
 
@@ -70,17 +46,19 @@ async function fetchText(url: string): Promise<string> {
 
 export default class ReadMeTool implements ToolInterface {
     name = 'ReadMe';
-    private readonly button = new ReadMeButton('ReadMe');
-    private readonly toolbar = new TextWindow(this.button, './README.txt');
+    private readonly button = new ToggleButton('ReadMe');
+    private readonly window = new TextWindow(this.button, './README.txt');
 
     init(editor: Editor): void {
         editor.addElementToDock(this.button.getDiv());
-        this.button.addEventListener('click', (): void => {
-            const toggled = this.button.toggle();
+        this.button.addEventListener('pointerdown', (): void => {
+            const toggled = this.button.getToggle();
             if (toggled) {
-                editor.addWindow(this.toolbar);
+                this.window.close();
+                this.button.setToggle(false);
             } else {
-                this.toolbar.remove();
+                editor.addWindow(this.window);
+                this.button.setToggle(true);
             }
         });
     }

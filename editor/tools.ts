@@ -47,9 +47,3 @@ export interface ToolInterface {
     allChange?(from: Array<boolean>, mode: ChangeMode, editor: Editor): void;
     scaled?(editor: Editor): void;
 }
-
-export interface WindowInterface {
-    addTo(div: HTMLDivElement): void;
-    resetPosition(): void;
-    close?(): void;
-}

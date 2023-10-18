@@ -1,6 +1,6 @@
-import Button from './button.js';
-import { black, white, } from '../editor/tools.js';
-import Window from '../editor/toolbar.js';
+import { ToggleButton } from '../editor/button.js';
+import { black, white } from '../editor/tools.js';
+import { Window } from '../editor/window.js';
 class TextWindow {
     window = new Window(this);
     button;
@@ -24,29 +24,12 @@ class TextWindow {
     addTo(div) {
         this.window.addTo(div);
     }
-    remove() {
-        this.window.remove();
-    }
     resetPosition() {
         this.window.resetPosition();
     }
     close() {
-        this.remove();
-        this.button.toggle();
-    }
-}
-class ReadMeButton extends Button {
-    toggled = false;
-    toggle() {
-        this.toggled = !this.toggled;
-        if (this.toggled) {
-            this.div.style.backgroundColor = white.toAlphaString(0.1);
-            this.div.style.textShadow = `none`;
-        }
-        else {
-            this.blur();
-        }
-        return this.toggled;
+        this.window.remove();
+        this.button.setToggle(false);
     }
 }
 async function fetchText(url) {
@@ -55,17 +38,19 @@ async function fetchText(url) {
 }
 export default class ReadMeTool {
     name = 'ReadMe';
-    button = new ReadMeButton('ReadMe');
-    toolbar = new TextWindow(this.button, './README.txt');
+    button = new ToggleButton('ReadMe');
+    window = new TextWindow(this.button, './README.txt');
     init(editor) {
         editor.addElementToDock(this.button.getDiv());
-        this.button.addEventListener('click', () => {
-            const toggled = this.button.toggle();
+        this.button.addEventListener('pointerdown', () => {
+            const toggled = this.button.getToggle();
             if (toggled) {
-                editor.addWindow(this.toolbar);
+                this.window.close();
+                this.button.setToggle(false);
             }
             else {
-                this.toolbar.remove();
+                editor.addWindow(this.window);
+                this.button.setToggle(true);
             }
         });
     }

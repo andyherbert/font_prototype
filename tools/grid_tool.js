@@ -1,36 +1,5 @@
-import Button from './button.js';
+import { Button, NumberButton } from '../editor/button.js';
 import { black, red, white, } from '../editor/tools.js';
-class NumberButton extends Button {
-    decreaseButton = new Button('-');
-    increaseButton = new Button('+');
-    container = document.createElement('div');
-    constructor(text) {
-        super(text);
-        this.container.style.display = 'flex';
-        this.container.style.flexDirection = 'row';
-        this.decreaseButton.getDiv().style.width = '24px';
-        super.getDiv().style.width = '130px';
-        this.increaseButton.getDiv().style.width = '24px';
-        this.container.appendChild(this.decreaseButton.getDiv());
-        this.container.appendChild(super.getDiv());
-        this.container.appendChild(this.increaseButton.getDiv());
-    }
-    addEventListenerIncrease(type, listener) {
-        this.increaseButton.addEventListener(type, listener);
-    }
-    addEventListenerDecrease(type, listener) {
-        this.decreaseButton.addEventListener(type, listener);
-    }
-    flashIncrease() {
-        this.increaseButton.flash();
-    }
-    flashDecrease() {
-        this.decreaseButton.flash();
-    }
-    getDiv() {
-        return this.container;
-    }
-}
 export default class GridTool {
     name = 'Grid';
     shortcuts = [

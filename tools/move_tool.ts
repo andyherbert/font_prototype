@@ -1,40 +1,7 @@
 import Editor from '../editor/editor.js';
 import { Key, ToolInterface } from '../editor/tools.js';
-
 import Coord from '../editor/coord.js';
-import Button from './button.js';
-
-class QuadButon {
-    private readonly div = document.createElement('div');
-    private readonly buttons: Button[] = [];
-
-    constructor(texts: [string, string, string, string]) {
-        this.div.style.display = 'flex';
-        this.div.style.flexDirection = 'row';
-        this.buttons = texts.map((text): Button => {
-            const button = new Button(text);
-            button.getDiv().style.flexGrow = '1';
-            button.addTo(this.div);
-            return button;
-        });
-    }
-
-    addEventListener(
-        index: number,
-        type: string,
-        listener: EventListener
-    ): void {
-        this.buttons[index]?.addEventListener(type, listener);
-    }
-
-    flash(index: number): void {
-        this.buttons[index]?.flash();
-    }
-
-    getDiv(): HTMLDivElement {
-        return this.div;
-    }
-}
+import { Button, QuadButton } from '../editor/button.js';
 
 export default class MoveTool implements ToolInterface {
     readonly name = 'Move';
@@ -48,7 +15,7 @@ export default class MoveTool implements ToolInterface {
     ];
     private start: Coord | null = null;
     private button = new Button('Move');
-    private readonly quad = new QuadButon(['Up', 'Down', 'Left', 'Right']);
+    private readonly quad = new QuadButton(['Up', 'Down', 'Left', 'Right']);
 
     init(editor: Editor): void {
         editor.addElementToDock(this.button.getDiv());

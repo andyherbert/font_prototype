@@ -1,7 +1,7 @@
 import Coord from './coord.js';
-import { ChangeMode, eventToKey, black, } from './tools.js';
+import { ChangeMode, eventToKey, black } from './tools.js';
 import InfoBar from './info_bar.js';
-import Window from './toolbar.js';
+import { Window } from './window.js';
 import UndoTool from '../tools/undo_tool.js';
 import CanvasTool from '../tools/canvas_tool.js';
 import GridTool from '../tools/grid_tool.js';

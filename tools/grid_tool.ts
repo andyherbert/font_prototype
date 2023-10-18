@@ -1,4 +1,4 @@
-import Button from './button.js';
+import { Button, NumberButton } from '../editor/button.js';
 import Editor from '../editor/editor.js';
 import {
     ChangeMode,
@@ -9,44 +9,6 @@ import {
     white,
 } from '../editor/tools.js';
 import Coord from '../editor/coord.js';
-
-class NumberButton extends Button {
-    private readonly decreaseButton = new Button('-');
-    private readonly increaseButton = new Button('+');
-    private readonly container = document.createElement('div');
-
-    constructor(text: string) {
-        super(text);
-        this.container.style.display = 'flex';
-        this.container.style.flexDirection = 'row';
-        this.decreaseButton.getDiv().style.width = '24px';
-        super.getDiv().style.width = '130px';
-        this.increaseButton.getDiv().style.width = '24px';
-        this.container.appendChild(this.decreaseButton.getDiv());
-        this.container.appendChild(super.getDiv());
-        this.container.appendChild(this.increaseButton.getDiv());
-    }
-
-    addEventListenerIncrease(type: string, listener: EventListener): void {
-        this.increaseButton.addEventListener(type, listener);
-    }
-
-    addEventListenerDecrease(type: string, listener: EventListener): void {
-        this.decreaseButton.addEventListener(type, listener);
-    }
-
-    flashIncrease(): void {
-        this.increaseButton.flash();
-    }
-
-    flashDecrease(): void {
-        this.decreaseButton.flash();
-    }
-
-    override getDiv(): HTMLDivElement {
-        return this.container;
-    }
-}
 
 export default class GridTool implements ToolInterface {
     readonly name = 'Grid';

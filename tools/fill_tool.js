@@ -1,4 +1,4 @@
-import Button from './button.js';
+import { Button } from '../editor/button.js';
 export default class FillTool {
     name = 'Fill';
     cursor = 'crosshair';
