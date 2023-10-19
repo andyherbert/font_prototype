@@ -150,3 +150,38 @@ export class QuadButton {
         return this.div;
     }
 }
+
+export enum Encoding {
+    Ascii = 'Ascii',
+    Iso8859_1 = 'ISO 8859/1',
+    Windows1252 = 'Windows 1252',
+}
+
+export class EncodingButton extends Button {
+    private encoding: Encoding;
+
+    constructor(encoding: Encoding) {
+        super(encoding);
+        this.encoding = encoding;
+    }
+
+    private next(): Encoding {
+        switch (this.encoding) {
+            case Encoding.Ascii:
+                return Encoding.Iso8859_1;
+            case Encoding.Iso8859_1:
+                return Encoding.Windows1252;
+            case Encoding.Windows1252:
+                return Encoding.Ascii;
+        }
+    }
+
+    toggle(): void {
+        this.encoding = this.next();
+        this.setText(this.encoding);
+    }
+
+    getEncoding(): Encoding {
+        return this.encoding;
+    }
+}

@@ -138,8 +138,13 @@ export default class Editor {
         return 16;
     }
 
-    setHeader(text: string): void {
-        this.header.setTextContent(text);
+    setHeader(text: string | undefined): void {
+        if (text != null) {
+            this.header.setTextContent(text);
+            this.header.show();
+        } else {
+            this.header.hide();
+        }
     }
 
     addTool(tool: ToolInterface): void {

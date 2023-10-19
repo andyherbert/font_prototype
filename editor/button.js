@@ -120,4 +120,34 @@ export class QuadButton {
         return this.div;
     }
 }
+export var Encoding;
+(function (Encoding) {
+    Encoding["Ascii"] = "Ascii";
+    Encoding["Iso8859_1"] = "ISO 8859/1";
+    Encoding["Windows1252"] = "Windows 1252";
+})(Encoding || (Encoding = {}));
+export class EncodingButton extends Button {
+    encoding;
+    constructor(encoding) {
+        super(encoding);
+        this.encoding = encoding;
+    }
+    next() {
+        switch (this.encoding) {
+            case Encoding.Ascii:
+                return Encoding.Iso8859_1;
+            case Encoding.Iso8859_1:
+                return Encoding.Windows1252;
+            case Encoding.Windows1252:
+                return Encoding.Ascii;
+        }
+    }
+    toggle() {
+        this.encoding = this.next();
+        this.setText(this.encoding);
+    }
+    getEncoding() {
+        return this.encoding;
+    }
+}
 //# sourceMappingURL=button.js.map
