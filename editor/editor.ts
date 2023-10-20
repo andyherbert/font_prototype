@@ -20,6 +20,7 @@ import MoveTool from '../tools/move_tool.js';
 import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
 import ReadMeTool from '../tools/readme_tool.js';
+import SaveTool from '../tools/save_tool.js';
 
 class Dock implements WindowInterface {
     private readonly window = new Window(this);
@@ -60,6 +61,7 @@ export default class Editor {
         new GridTool(),
         new ZoomTool(),
         new UndoTool(),
+        new SaveTool(),
         new ReadMeTool(),
     ];
     private currentTool: number = 0;
@@ -221,15 +223,25 @@ export default class Editor {
         }
     }
 
-    *enumeratePixels(): IterableIterator<[Coord, boolean]> {
-        let index = 0;
+    *enumeratePixelsFor(
+        index: number
+    ): IterableIterator<[Coord, boolean]> | null {
+        const pixels = this.data[index];
+        if (pixels == undefined) {
+            return null;
+        }
+        let pixelIndex = 0;
         for (let y = 0; y < this.height; y += 1) {
             for (let x = 0; x < this.width; x += 1) {
-                const pixel = this.data[this.currentCode]![index]!;
+                const pixel = pixels[pixelIndex]!;
                 yield [new Coord(x, y), pixel];
-                index += 1;
+                pixelIndex += 1;
             }
         }
+    }
+
+    *enumeratePixels(): IterableIterator<[Coord, boolean]> {
+        yield* this.enumeratePixelsFor(this.currentCode)!;
     }
 
     getPixel(coord: Coord): boolean | undefined {
@@ -344,10 +356,10 @@ export default class Editor {
         element.appendChild(this.div);
         this.div.focus();
         this.zoomToFit();
-        this.dock.moveToLeft(this);
         for (const tool of this.tools) {
             tool.init?.(this);
         }
+        this.dock.moveToLeft(this);
         this.setCode(65); // 'A'
         this.focusTool(1); // Pixel tool
     }
