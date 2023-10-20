@@ -2,6 +2,8 @@ import Editor from '../editor/editor.js';
 import {
     ChangeMode,
     Encoding,
+    getDefinitions,
+    Key,
     ToolInterface,
     black,
     gray,
@@ -10,14 +12,6 @@ import {
 import { Button, ToggleButton } from '../editor/button.js';
 import { Window, WindowInterface } from '../editor/window.js';
 import Coord from '../editor/coord.js';
-import {
-    CharDefinition,
-    ascii,
-    iso8859_1,
-    iso8859_15,
-    macroman,
-    windows1252,
-} from '../definitions/definitions.js';
 
 class FontWindow implements WindowInterface {
     private readonly window = new Window(this);
@@ -59,28 +53,13 @@ class FontWindow implements WindowInterface {
         this.window.addTo(div);
     }
 
-    resetPosition(): void {
-        this.window.resetPosition();
+    moveToLeft(editor: Editor): void {
+        this.window.moveToLeft(editor);
     }
 
     close(): void {
         this.window.remove();
         this.button.setToggle(false);
-    }
-
-    private getDefinitions(encoding: Encoding): Array<CharDefinition> {
-        switch (encoding) {
-            case Encoding.Ascii:
-                return ascii;
-            case Encoding.Iso8859_1:
-                return iso8859_1;
-            case Encoding.Iso8859_15:
-                return iso8859_15;
-            case Encoding.MacRoman:
-                return macroman;
-            case Encoding.Windows1252:
-                return windows1252;
-        }
     }
 
     redraw(editor: Editor, scale = 3): void {
@@ -129,7 +108,7 @@ class FontWindow implements WindowInterface {
             ctx.textBaseline = 'middle';
             ctx.fillStyle = gray.toString();
             let code = 0;
-            const definitions = this.getDefinitions(editor.getEncoding());
+            const definitions = getDefinitions(editor.getEncoding());
             for (let y = 0; y < 16; y += 1) {
                 for (let x = 0; x < 16; x += 1) {
                     const char = definitions[code]!.char;
@@ -159,6 +138,10 @@ class FontWindow implements WindowInterface {
                 }
             }
         }
+    }
+
+    moveToRight(editor: Editor): void {
+        this.window.moveToRight(editor);
     }
 
     resize(editor: Editor): void {
@@ -196,43 +179,22 @@ class FontWindow implements WindowInterface {
 
 export default class FontTool implements ToolInterface {
     name = 'Font';
+    shortcuts = [
+        { code: 'KeyE', cmd: true, shift: false, repeat: false },
+        { code: 'KeyF', cmd: true, shift: false, repeat: false },
+    ];
     private readonly button = new ToggleButton('Font');
     private readonly encodingButton = new Button('');
     private readonly window = new FontWindow(this.button);
 
     init(editor: Editor): void {
         this.button.addEventListener('pointerdown', () => {
-            const toggled = this.button.getToggle();
-            if (toggled) {
-                this.window.close();
-                this.button.setToggle(false);
-            } else {
-                editor.addWindow(this.window);
-                this.button.setToggle(true);
-            }
+            this.fontButtonClick(editor);
         });
         editor.addElementToDock(this.button.getDiv());
         editor.addElementToDock(this.encodingButton.getDiv());
         this.encodingButton.addEventListener('pointerdown', () => {
-            this.encodingButton.flash();
-            const encoding = editor.getEncoding();
-            switch (encoding) {
-                case Encoding.Ascii:
-                    editor.setEncoding(Encoding.Iso8859_1);
-                    break;
-                case Encoding.Iso8859_1:
-                    editor.setEncoding(Encoding.Iso8859_15);
-                    break;
-                case Encoding.Iso8859_15:
-                    editor.setEncoding(Encoding.MacRoman);
-                    break;
-                case Encoding.MacRoman:
-                    editor.setEncoding(Encoding.Windows1252);
-                    break;
-                case Encoding.Windows1252:
-                    editor.setEncoding(Encoding.Ascii);
-                    break;
-            }
+            this.encodingButtonClick(editor);
         });
         this.window.redraw(editor);
         const canvas = this.window.getCanvas();
@@ -244,27 +206,59 @@ export default class FontTool implements ToolInterface {
             const y = Math.floor((event.clientY - rect.top) / fontHeight);
             editor.setCode(x + y * 16);
         });
+        this.fontButtonClick(editor);
+        this.window.moveToRight(editor);
+    }
+
+    private fontButtonClick(editor: Editor): void {
+        const toggled = this.button.getToggle();
+        if (toggled) {
+            this.window.close();
+            this.button.setToggle(false);
+        } else {
+            editor.addWindow(this.window);
+            this.button.setToggle(true);
+        }
+    }
+
+    private encodingButtonClick(editor: Editor): void {
+        this.encodingButton.flash();
+        const encoding = editor.getEncoding();
+        switch (encoding) {
+            case Encoding.Ascii:
+                editor.setEncoding(Encoding.Iso8859_1);
+                break;
+            case Encoding.Iso8859_1:
+                editor.setEncoding(Encoding.Iso8859_15);
+                break;
+            case Encoding.Iso8859_15:
+                editor.setEncoding(Encoding.MacRoman);
+                break;
+            case Encoding.MacRoman:
+                editor.setEncoding(Encoding.Windows1252);
+                break;
+            case Encoding.Windows1252:
+                editor.setEncoding(Encoding.Ascii);
+                break;
+        }
+    }
+
+    keyDown(key: Key, editor: Editor): boolean {
+        switch (key.code) {
+            case 'KeyE':
+                this.encodingButtonClick(editor);
+                return false;
+            case 'KeyF':
+                this.fontButtonClick(editor);
+                return false;
+        }
+        return false;
     }
 
     setEncoding(encoding: Encoding, editor: Editor): void {
         const code = editor.getCode();
-        switch (encoding) {
-            case Encoding.Ascii:
-                editor.setHeader(ascii[code]!.name);
-                break;
-            case Encoding.Iso8859_1:
-                editor.setHeader(iso8859_1[code]!.name);
-                break;
-            case Encoding.Iso8859_15:
-                editor.setHeader(iso8859_15[code]!.name);
-                break;
-            case Encoding.MacRoman:
-                editor.setHeader(macroman[code]!.name);
-                break;
-            case Encoding.Windows1252:
-                editor.setHeader(windows1252[code]!.name);
-                break;
-        }
+        const definitions = getDefinitions(encoding);
+        editor.setHeader(definitions[code]!.name);
         this.encodingButton.setText(encoding);
         this.window.redraw(editor);
     }

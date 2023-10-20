@@ -13,7 +13,7 @@ import Coord from '../editor/coord.js';
 export default class GridTool implements ToolInterface {
     readonly name = 'Grid';
     readonly shortcuts = [
-        { code: 'KeyG', cmd: false, shift: false, repeat: false },
+        { code: 'KeyG', cmd: true, shift: false, repeat: false },
     ];
     private canvas = document.createElement('canvas');
     private ctx: CanvasRenderingContext2D | null = null;

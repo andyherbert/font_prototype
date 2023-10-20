@@ -7,11 +7,11 @@ export default class MoveTool implements ToolInterface {
     readonly name = 'Move';
     readonly cursor = 'grab';
     readonly shortcuts = [
-        { code: 'ArrowUp', cmd: false, shift: false, repeat: true },
-        { code: 'ArrowDown', cmd: false, shift: false, repeat: true },
-        { code: 'ArrowLeft', cmd: false, shift: false, repeat: true },
-        { code: 'ArrowRight', cmd: false, shift: false, repeat: true },
-        { code: 'KeyM', cmd: false, shift: false, repeat: false },
+        { code: 'ArrowUp', cmd: true, shift: false, repeat: true },
+        { code: 'ArrowDown', cmd: true, shift: false, repeat: true },
+        { code: 'ArrowLeft', cmd: true, shift: false, repeat: true },
+        { code: 'ArrowRight', cmd: true, shift: false, repeat: true },
+        { code: 'KeyM', cmd: true, shift: true, repeat: false },
     ];
     private start: Coord | null = null;
     private button = new Button('Move');
@@ -25,19 +25,15 @@ export default class MoveTool implements ToolInterface {
         editor.addElementToDock(this.quad.getDiv());
         this.quad.addEventListener(0, 'pointerdown', (): void => {
             this.moveUp(editor);
-            this.quad.flash(0);
         });
         this.quad.addEventListener(1, 'pointerdown', (): void => {
             this.moveDown(editor);
-            this.quad.flash(1);
         });
         this.quad.addEventListener(2, 'pointerdown', (): void => {
             this.moveLeft(editor);
-            this.quad.flash(2);
         });
         this.quad.addEventListener(3, 'pointerdown', (): void => {
             this.moveRight(editor);
-            this.quad.flash(3);
         });
     }
 
@@ -116,6 +112,7 @@ export default class MoveTool implements ToolInterface {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(0);
     }
 
     private moveDown(editor: Editor): void {
@@ -128,6 +125,7 @@ export default class MoveTool implements ToolInterface {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(1);
     }
 
     private moveLeft(editor: Editor): void {
@@ -140,6 +138,7 @@ export default class MoveTool implements ToolInterface {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(2);
     }
 
     private moveRight(editor: Editor): void {
@@ -152,5 +151,6 @@ export default class MoveTool implements ToolInterface {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(3);
     }
 }

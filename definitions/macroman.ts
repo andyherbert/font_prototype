@@ -1,5 +1,4 @@
 import { CharDefinition } from './definitions.js';
-import { isMac } from '../editor/tools.js';
 
 export default [
     { name: 'Null', char: null },
@@ -242,7 +241,7 @@ export default [
     { name: 'Uppercase I With Grave', char: 'Ì' },
     { name: 'Uppercase O With Acute', char: 'Ó' },
     { name: 'Uppercase O With Circumflex', char: 'Ô' },
-    { name: 'Apple Logo', char: isMac ? '' : null },
+    { name: 'Apple Logo', char: '' },
     { name: 'Uppercase O With Grave', char: 'Ò' },
     { name: 'Uppercase U With Acute', char: 'Ú' },
     { name: 'Uppercase U With Circumflex', char: 'Û' },

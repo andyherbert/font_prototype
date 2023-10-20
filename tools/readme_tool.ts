@@ -29,8 +29,8 @@ class TextWindow implements WindowInterface {
         this.window.addTo(div);
     }
 
-    resetPosition(): void {
-        this.window.resetPosition();
+    moveToLeft(editor: Editor): void {
+        this.window.moveToLeft(editor);
     }
 
     close(): void {

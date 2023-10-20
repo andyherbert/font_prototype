@@ -69,7 +69,7 @@ export default class PixelTool {
     name = 'Pixel';
     cursor = 'crosshair';
     shortcuts = [
-        { code: 'KeyP', cmd: false, shift: false, repeat: false },
+        { code: 'KeyP', cmd: true, shift: false, repeat: false },
     ];
     start = null;
     mode = null;

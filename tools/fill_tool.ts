@@ -8,7 +8,7 @@ export default class FillTool implements ToolInterface {
     readonly name = 'Fill';
     readonly cursor = 'crosshair';
     readonly shortcuts = [
-        { code: 'KeyF', cmd: false, shift: false, repeat: false },
+        { code: 'KeyP', cmd: true, shift: true, repeat: false },
     ];
     private readonly button = new Button('Fill');
 

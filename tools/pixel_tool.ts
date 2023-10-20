@@ -70,7 +70,7 @@ export default class PixelTool implements ToolInterface {
     readonly name = 'Pixel';
     readonly cursor = 'crosshair';
     readonly shortcuts = [
-        { code: 'KeyP', cmd: false, shift: false, repeat: false },
+        { code: 'KeyP', cmd: true, shift: false, repeat: false },
     ];
     private start: Coord | null = null;
     private mode: PixelToolMode | null = null;

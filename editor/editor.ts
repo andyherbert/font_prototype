@@ -3,6 +3,7 @@ import {
     ChangeMode,
     Encoding,
     eventToKey,
+    findCodeInDefinitions,
     ToolInterface,
     black,
     white,
@@ -29,8 +30,8 @@ class Dock implements WindowInterface {
         this.window.addTo(div);
     }
 
-    resetPosition(): void {
-        this.window.resetPosition();
+    moveToLeft(editor: Editor): void {
+        this.window.moveToLeft(editor);
     }
 
     addElement(element: HTMLElement): void {
@@ -94,7 +95,6 @@ export default class Editor {
 
         this.div.setAttribute('tabindex', '0');
         this.div.addEventListener('keydown', this.keyDown.bind(this));
-        this.div.addEventListener('keyup', this.keyUp.bind(this));
 
         this.child.addEventListener('pointerdown', this.pointerDown.bind(this));
         this.child.addEventListener('pointermove', this.pointerMove.bind(this));
@@ -107,12 +107,6 @@ export default class Editor {
         this.addWindow(this.dock);
 
         window.addEventListener('resize', this.resize.bind(this));
-
-        for (const tool of this.tools) {
-            tool.init?.(this);
-        }
-        this.focusTool(1); // Pixel tool
-        this.setCode(65); // 'A'
     }
 
     addElementToDock(element: HTMLElement): void {
@@ -191,7 +185,7 @@ export default class Editor {
         }
     }
 
-    private keyDown(event: KeyboardEvent) {
+    private keyDown(event: KeyboardEvent): void {
         const key = eventToKey(event);
         if (key.code == 'Escape') {
             this.blurTool();
@@ -213,27 +207,16 @@ export default class Editor {
                                 this.focusTool(index);
                             }
                             event.preventDefault();
+                            return;
                         }
                     }
                 }
             }
         }
-    }
-
-    private keyUp(event: KeyboardEvent) {
-        const key = eventToKey(event);
-        for (const tool of this.tools) {
-            if (tool.shortcuts != null) {
-                for (const other of tool.shortcuts) {
-                    if (
-                        key.code == other.code &&
-                        key.cmd == other.cmd &&
-                        key.shift == other.shift
-                    ) {
-                        tool.keyUp?.(key, this);
-                        event.preventDefault();
-                    }
-                }
+        if (key.char != null) {
+            const code = findCodeInDefinitions(key.char, this.encoding);
+            if (code != null) {
+                this.setCode(code);
             }
         }
     }
@@ -361,7 +344,12 @@ export default class Editor {
         element.appendChild(this.div);
         this.div.focus();
         this.zoomToFit();
-        this.dock.resetPosition();
+        this.dock.moveToLeft(this);
+        for (const tool of this.tools) {
+            tool.init?.(this);
+        }
+        this.setCode(65); // 'A'
+        this.focusTool(1); // Pixel tool
     }
 
     getData(): Array<boolean> {
@@ -436,5 +424,9 @@ export default class Editor {
 
     getEncoding(): Encoding {
         return this.encoding;
+    }
+
+    getViewportRect(): DOMRect {
+        return this.div.getBoundingClientRect();
     }
 }

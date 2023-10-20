@@ -4,11 +4,11 @@ export default class MoveTool {
     name = 'Move';
     cursor = 'grab';
     shortcuts = [
-        { code: 'ArrowUp', cmd: false, shift: false, repeat: true },
-        { code: 'ArrowDown', cmd: false, shift: false, repeat: true },
-        { code: 'ArrowLeft', cmd: false, shift: false, repeat: true },
-        { code: 'ArrowRight', cmd: false, shift: false, repeat: true },
-        { code: 'KeyM', cmd: false, shift: false, repeat: false },
+        { code: 'ArrowUp', cmd: true, shift: false, repeat: true },
+        { code: 'ArrowDown', cmd: true, shift: false, repeat: true },
+        { code: 'ArrowLeft', cmd: true, shift: false, repeat: true },
+        { code: 'ArrowRight', cmd: true, shift: false, repeat: true },
+        { code: 'KeyM', cmd: true, shift: true, repeat: false },
     ];
     start = null;
     button = new Button('Move');
@@ -21,19 +21,15 @@ export default class MoveTool {
         editor.addElementToDock(this.quad.getDiv());
         this.quad.addEventListener(0, 'pointerdown', () => {
             this.moveUp(editor);
-            this.quad.flash(0);
         });
         this.quad.addEventListener(1, 'pointerdown', () => {
             this.moveDown(editor);
-            this.quad.flash(1);
         });
         this.quad.addEventListener(2, 'pointerdown', () => {
             this.moveLeft(editor);
-            this.quad.flash(2);
         });
         this.quad.addEventListener(3, 'pointerdown', () => {
             this.moveRight(editor);
-            this.quad.flash(3);
         });
     }
     focus(_editor) {
@@ -104,6 +100,7 @@ export default class MoveTool {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(0);
     }
     moveDown(editor) {
         const pixels = editor.getData();
@@ -112,6 +109,7 @@ export default class MoveTool {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(1);
     }
     moveLeft(editor) {
         const pixels = editor.getData();
@@ -120,6 +118,7 @@ export default class MoveTool {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(2);
     }
     moveRight(editor) {
         const pixels = editor.getData();
@@ -128,6 +127,7 @@ export default class MoveTool {
             pixels[to.toIndex(editor.width)] = pixel;
         }
         editor.setData(pixels);
+        this.quad.flash(3);
     }
 }
 //# sourceMappingURL=move_tool.js.map

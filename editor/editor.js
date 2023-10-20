@@ -1,5 +1,12 @@
 import Coord from './coord.js';
-import { ChangeMode, Encoding, eventToKey, black, white, } from './tools.js';
+import {
+    ChangeMode,
+    Encoding,
+    eventToKey,
+    findCodeInDefinitions,
+    black,
+    white,
+} from './tools.js';
 import InfoBar from './info_bar.js';
 import { Window } from './window.js';
 import UndoTool from '../tools/undo_tool.js';
@@ -13,12 +20,12 @@ import FontTool from '../tools/font_tool.js';
 import ReadMeTool from '../tools/readme_tool.js';
 class Dock {
     window = new Window(this);
-    constructor() { }
+    constructor() {}
     addTo(div) {
         this.window.addTo(div);
     }
-    resetPosition() {
-        this.window.resetPosition();
+    moveToLeft(editor) {
+        this.window.moveToLeft(editor);
     }
     addElement(element) {
         this.window.addElement(element);
@@ -78,7 +85,6 @@ export default class Editor {
         this.child.style.touchAction = 'none';
         this.div.setAttribute('tabindex', '0');
         this.div.addEventListener('keydown', this.keyDown.bind(this));
-        this.div.addEventListener('keyup', this.keyUp.bind(this));
         this.child.addEventListener('pointerdown', this.pointerDown.bind(this));
         this.child.addEventListener('pointermove', this.pointerMove.bind(this));
         this.child.addEventListener('pointerup', this.pointerUp.bind(this));
@@ -87,11 +93,6 @@ export default class Editor {
         this.footer.addTo(this.div);
         this.addWindow(this.dock);
         window.addEventListener('resize', this.resize.bind(this));
-        for (const tool of this.tools) {
-            tool.init?.(this);
-        }
-        this.focusTool(1); // Pixel tool
-        this.setCode(65); // 'A'
     }
     addElementToDock(element) {
         this.dock.addElement(element);
@@ -103,11 +104,13 @@ export default class Editor {
         const { width, height } = this.div.getBoundingClientRect();
         for (let i = 1; i < 16; i += 1) {
             const power = Math.pow(2, i);
-            if (power * this.width > width ||
+            if (
+                power * this.width > width ||
                 power * this.height +
                     this.header.getHeight() +
                     this.footer.getHeight() >
-                    height) {
+                    height
+            ) {
                 return i - 1;
             }
         }
@@ -117,8 +120,7 @@ export default class Editor {
         if (text != null) {
             this.header.setTextContent(text);
             this.header.show();
-        }
-        else {
+        } else {
             this.header.hide();
         }
     }
@@ -164,38 +166,33 @@ export default class Editor {
         if (key.code == 'Escape') {
             this.blurTool();
             event.preventDefault();
-        }
-        else {
+        } else {
             for (const [index, tool] of this.tools.entries()) {
                 if (tool.shortcuts != null) {
                     for (const other of tool.shortcuts) {
-                        if (key.code == other.code &&
+                        if (
+                            key.code == other.code &&
                             key.cmd == other.cmd &&
                             key.shift == other.shift &&
-                            (!key.repeat || (key.repeat && other.repeat))) {
-                            if (tool.keyDown == null ||
-                                tool.keyDown(key, this)) {
+                            (!key.repeat || (key.repeat && other.repeat))
+                        ) {
+                            if (
+                                tool.keyDown == null ||
+                                tool.keyDown(key, this)
+                            ) {
                                 this.focusTool(index);
                             }
                             event.preventDefault();
+                            return;
                         }
                     }
                 }
             }
         }
-    }
-    keyUp(event) {
-        const key = eventToKey(event);
-        for (const tool of this.tools) {
-            if (tool.shortcuts != null) {
-                for (const other of tool.shortcuts) {
-                    if (key.code == other.code &&
-                        key.cmd == other.cmd &&
-                        key.shift == other.shift) {
-                        tool.keyUp?.(key, this);
-                        event.preventDefault();
-                    }
-                }
+        if (key.char != null) {
+            const code = findCodeInDefinitions(key.char, this.encoding);
+            if (code != null) {
+                this.setCode(code);
             }
         }
     }
@@ -219,7 +216,10 @@ export default class Editor {
             if (this.data[this.currentCode][index] != value) {
                 const from = this.data[this.currentCode][index];
                 this.data[this.currentCode][index] = value;
-                this.rgbaData[this.currentCode].set(value ? white.rgbaData : black.rgbaData, index * 4);
+                this.rgbaData[this.currentCode].set(
+                    value ? white.rgbaData : black.rgbaData,
+                    index * 4
+                );
                 for (const tool of this.tools) {
                     tool.change?.(coord, from, this);
                 }
@@ -268,14 +268,12 @@ export default class Editor {
         const height = this.scaledHeight();
         if (this.currentScale >= 4) {
             this.header.show();
-        }
-        else {
+        } else {
             this.header.hide();
         }
         if (this.currentScale >= 1) {
             this.footer.show();
-        }
-        else {
+        } else {
             this.footer.hide();
         }
         this.child.style.width = `${width}px`;
@@ -307,7 +305,12 @@ export default class Editor {
         element.appendChild(this.div);
         this.div.focus();
         this.zoomToFit();
-        this.dock.resetPosition();
+        for (const tool of this.tools) {
+            tool.init?.(this);
+        }
+        this.dock.moveToLeft(this);
+        this.setCode(65); // 'A'
+        this.focusTool(1); // Pixel tool
     }
     getData() {
         return [...this.data[this.currentCode]];
@@ -316,8 +319,7 @@ export default class Editor {
         const data = this.rgbaData[index];
         if (data != undefined) {
             return new Uint8ClampedArray(data);
-        }
-        else {
+        } else {
             return undefined;
         }
     }
@@ -328,7 +330,10 @@ export default class Editor {
         const from = this.getData();
         this.data[this.currentCode] = [...data];
         for (const [i, pixel] of data.entries()) {
-            this.rgbaData[this.currentCode].set(pixel ? white.rgbaData : black.rgbaData, i * 4);
+            this.rgbaData[this.currentCode].set(
+                pixel ? white.rgbaData : black.rgbaData,
+                i * 4
+            );
         }
         for (const tool of this.tools) {
             tool.allChange?.(from, mode, this);
@@ -368,6 +373,9 @@ export default class Editor {
     }
     getEncoding() {
         return this.encoding;
+    }
+    getViewportRect() {
+        return this.div.getBoundingClientRect();
     }
 }
 //# sourceMappingURL=editor.js.map

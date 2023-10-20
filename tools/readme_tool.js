@@ -24,8 +24,8 @@ class TextWindow {
     addTo(div) {
         this.window.addTo(div);
     }
-    resetPosition() {
-        this.window.resetPosition();
+    moveToLeft(editor) {
+        this.window.moveToLeft(editor);
     }
     close() {
         this.window.remove();

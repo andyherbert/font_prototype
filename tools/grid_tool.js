@@ -3,7 +3,7 @@ import { black, red, white, } from '../editor/tools.js';
 export default class GridTool {
     name = 'Grid';
     shortcuts = [
-        { code: 'KeyG', cmd: false, shift: false, repeat: false },
+        { code: 'KeyG', cmd: true, shift: false, repeat: false },
     ];
     canvas = document.createElement('canvas');
     ctx = null;

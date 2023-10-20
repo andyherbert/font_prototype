@@ -5,13 +5,10 @@ import { Key, ToolInterface } from '../editor/tools.js';
 export default class ZoomTool implements ToolInterface {
     readonly name = 'Pixel';
     readonly shortcuts = [
-        { code: 'Minus', cmd: false, shift: false, repeat: true },
-        { code: 'Equal', cmd: false, shift: false, repeat: true },
-        { code: 'Digit0', cmd: false, shift: false, repeat: false },
-        { code: 'Digit1', cmd: false, shift: false, repeat: false },
-        { code: 'Digit2', cmd: false, shift: false, repeat: false },
+        { code: 'Minus', cmd: true, shift: false, repeat: true },
+        { code: 'Equal', cmd: true, shift: false, repeat: true },
+        { code: 'Digit0', cmd: true, shift: false, repeat: false },
     ];
-    private zoom: number | null = null;
     private readonly zoomInButton = new Button('Zoom In');
     private readonly zoomOutButton = new Button('Zoom Out');
     private readonly zoomToFitButton = new Button('Fit to Screen');
@@ -52,16 +49,6 @@ export default class ZoomTool implements ToolInterface {
                 this.zoomToFit(editor);
                 break;
             }
-            case 'Digit1': {
-                this.zoom = editor.getScale();
-                editor.setScale(0);
-                break;
-            }
-            case 'Digit2': {
-                this.zoom = editor.getScale();
-                editor.setScale(1);
-                break;
-            }
             case 'Minus': {
                 this.zoomOut(editor);
                 break;
@@ -72,12 +59,5 @@ export default class ZoomTool implements ToolInterface {
             }
         }
         return false;
-    }
-
-    keyUp(_key: Key, editor: Editor): void {
-        if (this.zoom != null) {
-            editor.setScale(this.zoom);
-            this.zoom = null;
-        }
     }
 }

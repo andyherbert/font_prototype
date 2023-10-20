@@ -3,7 +3,7 @@ export default class FillTool {
     name = 'Fill';
     cursor = 'crosshair';
     shortcuts = [
-        { code: 'KeyF', cmd: false, shift: false, repeat: false },
+        { code: 'KeyP', cmd: true, shift: true, repeat: false },
     ];
     button = new Button('Fill');
     init(editor) {

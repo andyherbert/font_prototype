@@ -95,13 +95,19 @@ export class Window {
             this.div.parentElement.removeChild(this.div);
         }
     }
-    resetPosition() {
-        if (this.div.parentElement != null) {
-            const { width, height } = this.div.parentElement.getBoundingClientRect();
-            const x = Math.floor(width / 10);
-            const y = Math.floor(height / 10);
-            this.setPosition(new Coord(x, y));
-        }
+    moveToLeft(editor) {
+        const viewportRect = editor.getViewportRect();
+        const divRect = this.div.getBoundingClientRect();
+        const x = 25;
+        const y = Math.floor((viewportRect.height - divRect.height) / 2);
+        this.setPosition(new Coord(x, y));
+    }
+    moveToRight(editor) {
+        const viewportRect = editor.getViewportRect();
+        const divRect = this.div.getBoundingClientRect();
+        const x = viewportRect.width - divRect.width - 25;
+        const y = Math.floor((viewportRect.height - divRect.height) / 2);
+        this.setPosition(new Coord(x, y));
     }
 }
 //# sourceMappingURL=window.js.map
