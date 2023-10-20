@@ -4,6 +4,14 @@ export const white = new Color(242, 251, 235);
 export const gray = new Color(68, 71, 65);
 export const black = new Color(23, 18, 25);
 export const red = new Color(255, 60, 60);
+export var Encoding;
+(function (Encoding) {
+    Encoding["Ascii"] = "US-ASCII";
+    Encoding["Iso8859_1"] = "ISO-8859-1";
+    Encoding["Iso8859_15"] = "ISO-8859-15";
+    Encoding["MacRoman"] = "Mac OS Roman";
+    Encoding["Windows1252"] = "Windows-1252";
+})(Encoding || (Encoding = {}));
 export function eventToKey(event) {
     return {
         code: event.code,

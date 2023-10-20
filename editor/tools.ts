@@ -9,6 +9,14 @@ export const gray = new Color(68, 71, 65);
 export const black = new Color(23, 18, 25);
 export const red = new Color(255, 60, 60);
 
+export enum Encoding {
+    Ascii = 'US-ASCII',
+    Iso8859_1 = 'ISO-8859-1',
+    Iso8859_15 = 'ISO-8859-15',
+    MacRoman = 'Mac OS Roman',
+    Windows1252 = 'Windows-1252',
+}
+
 export interface Key {
     code: string;
     cmd: boolean;
@@ -48,4 +56,5 @@ export interface ToolInterface {
     allChange?(from: Array<boolean>, mode: ChangeMode, editor: Editor): void;
     scaled?(editor: Editor): void;
     setCode?(code: number, editor: Editor): void;
+    setEncoding?(encoding: Encoding, editor: Editor): void;
 }

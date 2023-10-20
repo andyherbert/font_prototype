@@ -1,17 +1,23 @@
 import Editor from '../editor/editor.js';
 import {
     ChangeMode,
+    Encoding,
     ToolInterface,
     black,
     gray,
     white,
 } from '../editor/tools.js';
-import { Encoding, EncodingButton, ToggleButton } from '../editor/button.js';
+import { Button, ToggleButton } from '../editor/button.js';
 import { Window, WindowInterface } from '../editor/window.js';
 import Coord from '../editor/coord.js';
-import ascii from '../encodings/ascii.js';
-import iso8859_1 from '../encodings/iso8859_1.js';
-import windows1252 from '../encodings/windows1252.js';
+import {
+    CharDefinition,
+    ascii,
+    iso8859_1,
+    iso8859_15,
+    macroman,
+    windows1252,
+} from '../definitions/definitions.js';
 
 class FontWindow implements WindowInterface {
     private readonly window = new Window(this);
@@ -62,6 +68,21 @@ class FontWindow implements WindowInterface {
         this.button.setToggle(false);
     }
 
+    private getDefinitions(encoding: Encoding): Array<CharDefinition> {
+        switch (encoding) {
+            case Encoding.Ascii:
+                return ascii;
+            case Encoding.Iso8859_1:
+                return iso8859_1;
+            case Encoding.Iso8859_15:
+                return iso8859_15;
+            case Encoding.MacRoman:
+                return macroman;
+            case Encoding.Windows1252:
+                return windows1252;
+        }
+    }
+
     redraw(editor: Editor, scale = 3): void {
         const width = (editor.width * 16 + 16) * scale;
         const height = (editor.height * 16 + 16) * scale;
@@ -108,9 +129,11 @@ class FontWindow implements WindowInterface {
             ctx.textBaseline = 'middle';
             ctx.fillStyle = gray.toString();
             let code = 0;
+            const definitions = this.getDefinitions(editor.getEncoding());
             for (let y = 0; y < 16; y += 1) {
                 for (let x = 0; x < 16; x += 1) {
-                    if (code > 32 && code < 127) {
+                    const char = definitions[code]!.char;
+                    if (char != null) {
                         const px =
                             Math.floor((x + 0.5) * editor.width * scale) +
                             x * scale;
@@ -118,7 +141,6 @@ class FontWindow implements WindowInterface {
                             Math.floor((y + 0.5) * editor.height * scale) +
                             y * scale +
                             2;
-                        const char = String.fromCharCode(code);
                         ctx.fillText(char, px, py);
                     }
                     const canvas = this.canvases[code]!;
@@ -132,6 +154,7 @@ class FontWindow implements WindowInterface {
                     canvas.style.top = `${
                         (y * (editor.height + 1) + 1) * scale
                     }px`;
+                    this.updateGlyph(code, editor);
                     code += 1;
                 }
             }
@@ -142,17 +165,21 @@ class FontWindow implements WindowInterface {
         this.redraw(editor);
     }
 
-    change(editor: Editor): void {
-        const canvas = this.canvases[editor.getCode()]!;
-        if (editor.hasAnyPixels()) {
+    updateGlyph(code: number, editor: Editor): void {
+        const canvas = this.canvases[code]!;
+        if (editor.hasAnyPixelsFor(code)!) {
             canvas.style.opacity = '1';
             const ctx = canvas.getContext('2d')!;
             const imageData = ctx.createImageData(canvas.width, canvas.height);
-            imageData.data.set(editor.getRgbaData());
+            imageData.data.set(editor.getRgbaDataFor(code)!);
             ctx.putImageData(imageData, 0, 0);
         } else {
             canvas.style.opacity = '0';
         }
+    }
+
+    change(editor: Editor): void {
+        this.updateGlyph(editor.getCode(), editor);
     }
 
     setCode(code: number, editor: Editor, scale = 3): void {
@@ -170,7 +197,7 @@ class FontWindow implements WindowInterface {
 export default class FontTool implements ToolInterface {
     name = 'Font';
     private readonly button = new ToggleButton('Font');
-    private readonly encodingButton = new EncodingButton(Encoding.Ascii);
+    private readonly encodingButton = new Button('');
     private readonly window = new FontWindow(this.button);
 
     init(editor: Editor): void {
@@ -188,8 +215,24 @@ export default class FontTool implements ToolInterface {
         editor.addElementToDock(this.encodingButton.getDiv());
         this.encodingButton.addEventListener('pointerdown', () => {
             this.encodingButton.flash();
-            this.encodingButton.toggle();
-            this.setName(editor.getCode(), editor);
+            const encoding = editor.getEncoding();
+            switch (encoding) {
+                case Encoding.Ascii:
+                    editor.setEncoding(Encoding.Iso8859_1);
+                    break;
+                case Encoding.Iso8859_1:
+                    editor.setEncoding(Encoding.Iso8859_15);
+                    break;
+                case Encoding.Iso8859_15:
+                    editor.setEncoding(Encoding.MacRoman);
+                    break;
+                case Encoding.MacRoman:
+                    editor.setEncoding(Encoding.Windows1252);
+                    break;
+                case Encoding.Windows1252:
+                    editor.setEncoding(Encoding.Ascii);
+                    break;
+            }
         });
         this.window.redraw(editor);
         const canvas = this.window.getCanvas();
@@ -203,24 +246,32 @@ export default class FontTool implements ToolInterface {
         });
     }
 
-    setName(code: number, editor: Editor): void {
-        const encoding = this.encodingButton.getEncoding();
+    setEncoding(encoding: Encoding, editor: Editor): void {
+        const code = editor.getCode();
         switch (encoding) {
             case Encoding.Ascii:
-                editor.setHeader(ascii[code]);
+                editor.setHeader(ascii[code]!.name);
                 break;
             case Encoding.Iso8859_1:
-                editor.setHeader(iso8859_1[code]);
+                editor.setHeader(iso8859_1[code]!.name);
+                break;
+            case Encoding.Iso8859_15:
+                editor.setHeader(iso8859_15[code]!.name);
+                break;
+            case Encoding.MacRoman:
+                editor.setHeader(macroman[code]!.name);
                 break;
             case Encoding.Windows1252:
-                editor.setHeader(windows1252[code]);
+                editor.setHeader(windows1252[code]!.name);
                 break;
         }
+        this.encodingButton.setText(encoding);
+        this.window.redraw(editor);
     }
 
     setCode(code: number, editor: Editor): void {
         this.window.setCode(code, editor);
-        this.setName(code, editor);
+        this.setEncoding(editor.getEncoding(), editor);
     }
 
     change(_coord: Coord, _from: boolean, editor: Editor): void {

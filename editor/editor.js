@@ -1,5 +1,5 @@
 import Coord from './coord.js';
-import { ChangeMode, eventToKey, black, white, } from './tools.js';
+import { ChangeMode, Encoding, eventToKey, black, white, } from './tools.js';
 import InfoBar from './info_bar.js';
 import { Window } from './window.js';
 import UndoTool from '../tools/undo_tool.js';
@@ -48,6 +48,7 @@ export default class Editor {
         new ReadMeTool(),
     ];
     currentTool = 0;
+    encoding = Encoding.Ascii;
     constructor(width, height) {
         this.width = width;
         this.height = height;
@@ -311,8 +312,17 @@ export default class Editor {
     getData() {
         return [...this.data[this.currentCode]];
     }
+    getRgbaDataFor(index) {
+        const data = this.rgbaData[index];
+        if (data != undefined) {
+            return new Uint8ClampedArray(data);
+        }
+        else {
+            return undefined;
+        }
+    }
     getRgbaData() {
-        return this.rgbaData[this.currentCode];
+        return this.getRgbaDataFor(this.currentCode);
     }
     setData(data, mode = ChangeMode.Edit) {
         const from = this.getData();
@@ -338,14 +348,26 @@ export default class Editor {
             tool.setCode?.(code, this);
         }
     }
+    hasAnyPixelsFor(index) {
+        return this.data[index]?.some((pixel) => pixel);
+    }
     hasAnyPixels() {
-        return this.data[this.currentCode].some((pixel) => pixel);
+        return this.hasAnyPixelsFor(this.currentCode);
     }
     resize() {
         const max = this.getMaxScale();
         if (this.currentScale > max) {
             this.setScale(max);
         }
+    }
+    setEncoding(encoding) {
+        this.encoding = encoding;
+        for (const tool of this.tools) {
+            tool.setEncoding?.(encoding, this);
+        }
+    }
+    getEncoding() {
+        return this.encoding;
     }
 }
 //# sourceMappingURL=editor.js.map

@@ -1,9 +1,7 @@
-import { black, gray, white, } from '../editor/tools.js';
-import { Encoding, EncodingButton, ToggleButton } from '../editor/button.js';
+import { Encoding, black, gray, white, } from '../editor/tools.js';
+import { Button, ToggleButton } from '../editor/button.js';
 import { Window } from '../editor/window.js';
-import ascii from '../encodings/ascii.js';
-import iso8859_1 from '../encodings/iso8859_1.js';
-import windows1252 from '../encodings/windows1252.js';
+import { ascii, iso8859_1, iso8859_15, macroman, windows1252, } from '../definitions/definitions.js';
 class FontWindow {
     window = new Window(this);
     button;
@@ -47,6 +45,20 @@ class FontWindow {
         this.window.remove();
         this.button.setToggle(false);
     }
+    getDefinitions(encoding) {
+        switch (encoding) {
+            case Encoding.Ascii:
+                return ascii;
+            case Encoding.Iso8859_1:
+                return iso8859_1;
+            case Encoding.Iso8859_15:
+                return iso8859_15;
+            case Encoding.MacRoman:
+                return macroman;
+            case Encoding.Windows1252:
+                return windows1252;
+        }
+    }
     redraw(editor, scale = 3) {
         const width = (editor.width * 16 + 16) * scale;
         const height = (editor.height * 16 + 16) * scale;
@@ -87,15 +99,16 @@ class FontWindow {
             ctx.textBaseline = 'middle';
             ctx.fillStyle = gray.toString();
             let code = 0;
+            const definitions = this.getDefinitions(editor.getEncoding());
             for (let y = 0; y < 16; y += 1) {
                 for (let x = 0; x < 16; x += 1) {
-                    if (code > 32 && code < 127) {
+                    const char = definitions[code].char;
+                    if (char != null) {
                         const px = Math.floor((x + 0.5) * editor.width * scale) +
                             x * scale;
                         const py = Math.floor((y + 0.5) * editor.height * scale) +
                             y * scale +
                             2;
-                        const char = String.fromCharCode(code);
                         ctx.fillText(char, px, py);
                     }
                     const canvas = this.canvases[code];
@@ -105,6 +118,7 @@ class FontWindow {
                     canvas.style.height = `${editor.height * scale}px`;
                     canvas.style.left = `${(x * (editor.width + 1) + 1) * scale}px`;
                     canvas.style.top = `${(y * (editor.height + 1) + 1) * scale}px`;
+                    this.updateGlyph(code, editor);
                     code += 1;
                 }
             }
@@ -113,18 +127,21 @@ class FontWindow {
     resize(editor) {
         this.redraw(editor);
     }
-    change(editor) {
-        const canvas = this.canvases[editor.getCode()];
-        if (editor.hasAnyPixels()) {
+    updateGlyph(code, editor) {
+        const canvas = this.canvases[code];
+        if (editor.hasAnyPixelsFor(code)) {
             canvas.style.opacity = '1';
             const ctx = canvas.getContext('2d');
             const imageData = ctx.createImageData(canvas.width, canvas.height);
-            imageData.data.set(editor.getRgbaData());
+            imageData.data.set(editor.getRgbaDataFor(code));
             ctx.putImageData(imageData, 0, 0);
         }
         else {
             canvas.style.opacity = '0';
         }
+    }
+    change(editor) {
+        this.updateGlyph(editor.getCode(), editor);
     }
     setCode(code, editor, scale = 3) {
         const x = code % 16;
@@ -140,7 +157,7 @@ class FontWindow {
 export default class FontTool {
     name = 'Font';
     button = new ToggleButton('Font');
-    encodingButton = new EncodingButton(Encoding.Ascii);
+    encodingButton = new Button('');
     window = new FontWindow(this.button);
     init(editor) {
         this.button.addEventListener('pointerdown', () => {
@@ -158,8 +175,24 @@ export default class FontTool {
         editor.addElementToDock(this.encodingButton.getDiv());
         this.encodingButton.addEventListener('pointerdown', () => {
             this.encodingButton.flash();
-            this.encodingButton.toggle();
-            this.setName(editor.getCode(), editor);
+            const encoding = editor.getEncoding();
+            switch (encoding) {
+                case Encoding.Ascii:
+                    editor.setEncoding(Encoding.Iso8859_1);
+                    break;
+                case Encoding.Iso8859_1:
+                    editor.setEncoding(Encoding.Iso8859_15);
+                    break;
+                case Encoding.Iso8859_15:
+                    editor.setEncoding(Encoding.MacRoman);
+                    break;
+                case Encoding.MacRoman:
+                    editor.setEncoding(Encoding.Windows1252);
+                    break;
+                case Encoding.Windows1252:
+                    editor.setEncoding(Encoding.Ascii);
+                    break;
+            }
         });
         this.window.redraw(editor);
         const canvas = this.window.getCanvas();
@@ -172,23 +205,31 @@ export default class FontTool {
             editor.setCode(x + y * 16);
         });
     }
-    setName(code, editor) {
-        const encoding = this.encodingButton.getEncoding();
+    setEncoding(encoding, editor) {
+        const code = editor.getCode();
         switch (encoding) {
             case Encoding.Ascii:
-                editor.setHeader(ascii[code]);
+                editor.setHeader(ascii[code].name);
                 break;
             case Encoding.Iso8859_1:
-                editor.setHeader(iso8859_1[code]);
+                editor.setHeader(iso8859_1[code].name);
+                break;
+            case Encoding.Iso8859_15:
+                editor.setHeader(iso8859_15[code].name);
+                break;
+            case Encoding.MacRoman:
+                editor.setHeader(macroman[code].name);
                 break;
             case Encoding.Windows1252:
-                editor.setHeader(windows1252[code]);
+                editor.setHeader(windows1252[code].name);
                 break;
         }
+        this.encodingButton.setText(encoding);
+        this.window.redraw(editor);
     }
     setCode(code, editor) {
         this.window.setCode(code, editor);
-        this.setName(code, editor);
+        this.setEncoding(editor.getEncoding(), editor);
     }
     change(_coord, _from, editor) {
         if (this.button.getToggle()) {

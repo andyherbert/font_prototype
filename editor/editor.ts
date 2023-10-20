@@ -1,6 +1,7 @@
 import Coord from './coord.js';
 import {
     ChangeMode,
+    Encoding,
     eventToKey,
     ToolInterface,
     black,
@@ -61,6 +62,7 @@ export default class Editor {
         new ReadMeTool(),
     ];
     private currentTool: number = 0;
+    private encoding: Encoding = Encoding.Ascii;
 
     constructor(width: number, height: number) {
         this.width = width;
@@ -138,7 +140,7 @@ export default class Editor {
         return 16;
     }
 
-    setHeader(text: string | undefined): void {
+    setHeader(text: string | null): void {
         if (text != null) {
             this.header.setTextContent(text);
             this.header.show();
@@ -366,8 +368,17 @@ export default class Editor {
         return [...this.data[this.currentCode]!];
     }
 
+    getRgbaDataFor(index: number): Uint8ClampedArray | undefined {
+        const data = this.rgbaData[index];
+        if (data != undefined) {
+            return new Uint8ClampedArray(data);
+        } else {
+            return undefined;
+        }
+    }
+
     getRgbaData(): Uint8ClampedArray {
-        return this.rgbaData[this.currentCode]!;
+        return this.getRgbaDataFor(this.currentCode)!;
     }
 
     setData(data: Array<boolean>, mode = ChangeMode.Edit): void {
@@ -401,8 +412,12 @@ export default class Editor {
         }
     }
 
+    hasAnyPixelsFor(index: number): boolean | undefined {
+        return this.data[index]?.some((pixel) => pixel);
+    }
+
     hasAnyPixels(): boolean {
-        return this.data[this.currentCode]!.some((pixel) => pixel);
+        return this.hasAnyPixelsFor(this.currentCode)!;
     }
 
     private resize(): void {
@@ -410,5 +425,16 @@ export default class Editor {
         if (this.currentScale > max) {
             this.setScale(max);
         }
+    }
+
+    setEncoding(encoding: Encoding): void {
+        this.encoding = encoding;
+        for (const tool of this.tools) {
+            tool.setEncoding?.(encoding, this);
+        }
+    }
+
+    getEncoding(): Encoding {
+        return this.encoding;
     }
 }
