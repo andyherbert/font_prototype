@@ -79,9 +79,6 @@ export default class GridTool {
         this.redraw(editor);
     }
     init(editor) {
-        this.baseLine = Math.floor(editor.height * 0.8);
-        this.meanLine = Math.floor(editor.height * 0.3);
-        this.gapLine = Math.floor(editor.width * 0.9);
         this.ctx = this.canvas.getContext('2d', {
             willReadFrequently: true,
         });
@@ -154,10 +151,8 @@ export default class GridTool {
                 this.gapLineButton.flashDecrease();
             }
         });
+        this.calculateNewRulers(editor.width, editor.height);
         this.updateGridButton();
-        this.updateBaseLineButton();
-        this.updateMeanLineButton();
-        this.updateGapLineButton();
         this.scaled(editor);
     }
     keyDown(_key, editor) {
@@ -315,6 +310,18 @@ export default class GridTool {
         this.redraw(editor);
     }
     setCode(_code, editor) {
+        this.redraw(editor);
+    }
+    calculateNewRulers(width, height) {
+        this.baseLine = Math.floor(height * 0.8);
+        this.meanLine = Math.floor(height * 0.3);
+        this.gapLine = Math.floor(width * 0.9);
+        this.updateBaseLineButton();
+        this.updateMeanLineButton();
+        this.updateGapLineButton();
+    }
+    changeFont(width, height, editor) {
+        this.calculateNewRulers(width, height);
         this.redraw(editor);
     }
 }

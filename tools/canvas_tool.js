@@ -2,7 +2,10 @@ import { black, white } from '../editor/tools.js';
 export default class CanvasTool {
     name = 'Canvas';
     canvas = document.createElement('canvas');
-    ctx = null;
+    ctx = this.canvas.getContext('2d', {
+        alpha: false,
+        willReadFrequently: true,
+    });
     imageData = null;
     redraw(editor) {
         for (const [coord, pixel] of editor.enumeratePixels()) {
@@ -17,18 +20,12 @@ export default class CanvasTool {
     init(editor) {
         this.canvas.width = editor.width;
         this.canvas.height = editor.height;
-        this.ctx = this.canvas.getContext('2d', {
-            alpha: false,
-            willReadFrequently: true,
-        });
-        if (this.ctx != null) {
-            this.imageData = this.ctx.createImageData(editor.width, editor.height);
-            editor.addOverlay(this.canvas);
-            this.redraw(editor);
-        }
+        this.imageData = this.ctx.createImageData(editor.width, editor.height);
+        editor.addOverlay(this.canvas);
+        this.redraw(editor);
     }
     rect(coord, color) {
-        if (this.ctx != null && this.imageData != null) {
+        if (this.imageData != null) {
             this.imageData.data.set(color.rgbaData, coord.toIndex(this.canvas.width) * 4);
             this.ctx.putImageData(this.imageData, 0, 0);
         }
@@ -51,6 +48,12 @@ export default class CanvasTool {
         this.redraw(editor);
     }
     setCode(_code, editor) {
+        this.redraw(editor);
+    }
+    changeFont(width, height, editor) {
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.imageData = this.ctx.createImageData(width, height);
         this.redraw(editor);
     }
 }

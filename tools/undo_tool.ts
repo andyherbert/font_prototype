@@ -7,6 +7,12 @@ class Buffers {
     undo: Array<Map<number, [Coord, boolean]> | Array<boolean>> = new Array();
     redo: Array<Map<number, [Coord, boolean]> | Array<boolean>> = new Array();
     change: Map<number, [Coord, boolean]> = new Map();
+
+    clear(): void {
+        this.undo = new Array();
+        this.redo = new Array();
+        this.change = new Map();
+    }
 }
 
 export default class UndoTool implements ToolInterface {
@@ -148,5 +154,11 @@ export default class UndoTool implements ToolInterface {
 
     setCode(code: number, _editor: Editor): void {
         this.currentCode = code;
+    }
+
+    changeFont(_width: number, _height: number, _editor: Editor): void {
+        for (const buffer of this.buffers) {
+            buffer.clear();
+        }
     }
 }

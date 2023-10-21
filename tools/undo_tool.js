@@ -4,6 +4,11 @@ class Buffers {
     undo = new Array();
     redo = new Array();
     change = new Map();
+    clear() {
+        this.undo = new Array();
+        this.redo = new Array();
+        this.change = new Map();
+    }
 }
 export default class UndoTool {
     name = 'Undo';
@@ -133,6 +138,11 @@ export default class UndoTool {
     }
     setCode(code, _editor) {
         this.currentCode = code;
+    }
+    changeFont(_width, _height, _editor) {
+        for (const buffer of this.buffers) {
+            buffer.clear();
+        }
     }
 }
 //# sourceMappingURL=undo_tool.js.map

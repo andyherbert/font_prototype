@@ -20,6 +20,7 @@ class FontWindow implements WindowInterface {
     private readonly canvas = document.createElement('canvas');
     private readonly selectedDiv = document.createElement('div');
     private readonly canvases = new Array<HTMLCanvasElement>();
+    private readonly scale = 2;
 
     constructor(button: ToggleButton) {
         this.button = button;
@@ -62,9 +63,9 @@ class FontWindow implements WindowInterface {
         this.button.setToggle(false);
     }
 
-    redraw(editor: Editor, scale = 3): void {
-        const width = (editor.width * 16 + 16) * scale;
-        const height = (editor.height * 16 + 16) * scale;
+    redraw(editor: Editor): void {
+        const width = (editor.width * 16 + 16) * this.scale;
+        const height = (editor.height * 16 + 16) * this.scale;
         this.div.style.width = `${width}px`;
         this.div.style.height = `${height}px`;
         this.canvas.height = height;
@@ -82,14 +83,14 @@ class FontWindow implements WindowInterface {
                 }
             }
             for (
-                let y = (editor.height + 1) * scale;
+                let y = (editor.height + 1) * this.scale;
                 y < height;
-                y += (editor.height + 1) * scale
+                y += (editor.height + 1) * this.scale
             ) {
                 ctx.putImageData(imageDataHorizontal, 0, y);
             }
             const imageDataVertical = ctx.createImageData(1, height);
-            for (let i = 0; i < width * 4; i += 4) {
+            for (let i = 0; i < height * 4; i += 4) {
                 if (i % 8 == 0) {
                     imageDataVertical.data.set(gray.rgbaData, i);
                 } else {
@@ -97,13 +98,13 @@ class FontWindow implements WindowInterface {
                 }
             }
             for (
-                let x = (editor.width + 1) * scale;
+                let x = (editor.width + 1) * this.scale;
                 x < width;
-                x += (editor.width + 1) * scale
+                x += (editor.width + 1) * this.scale
             ) {
                 ctx.putImageData(imageDataVertical, x, 0);
             }
-            ctx.font = '18px ui-monospace, monospace';
+            ctx.font = '13px ui-monospace, monospace';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = gray.toString();
@@ -114,24 +115,25 @@ class FontWindow implements WindowInterface {
                     const char = definitions[code]!.char;
                     if (char != null) {
                         const px =
-                            Math.floor((x + 0.5) * editor.width * scale) +
-                            x * scale;
+                            Math.floor((x + 0.5) * editor.width * this.scale) +
+                            x * this.scale +
+                            1;
                         const py =
-                            Math.floor((y + 0.5) * editor.height * scale) +
-                            y * scale +
+                            Math.floor((y + 0.5) * editor.height * this.scale) +
+                            y * this.scale +
                             2;
                         ctx.fillText(char, px, py);
                     }
                     const canvas = this.canvases[code]!;
                     canvas.width = editor.width;
                     canvas.height = editor.height;
-                    canvas.style.width = `${editor.width * scale}px`;
-                    canvas.style.height = `${editor.height * scale}px`;
+                    canvas.style.width = `${editor.width * this.scale}px`;
+                    canvas.style.height = `${editor.height * this.scale}px`;
                     canvas.style.left = `${
-                        (x * (editor.width + 1) + 1) * scale
+                        (x * (editor.width + 1) + 1) * this.scale
                     }px`;
                     canvas.style.top = `${
-                        (y * (editor.height + 1) + 1) * scale
+                        (y * (editor.height + 1) + 1) * this.scale
                     }px`;
                     this.updateGlyph(code, editor);
                     code += 1;
@@ -142,10 +144,6 @@ class FontWindow implements WindowInterface {
 
     moveToRight(editor: Editor): void {
         this.window.moveToRight(editor);
-    }
-
-    resize(editor: Editor): void {
-        this.redraw(editor);
     }
 
     updateGlyph(code: number, editor: Editor): void {
@@ -165,15 +163,15 @@ class FontWindow implements WindowInterface {
         this.updateGlyph(editor.getCode(), editor);
     }
 
-    setCode(code: number, editor: Editor, scale = 3): void {
+    setCode(code: number, editor: Editor): void {
         const x = code % 16;
         const y = Math.floor(code / 16);
-        const px = x * (editor.width + 1) * scale;
-        const py = y * (editor.height + 1) * scale;
+        const px = x * (editor.width + 1) * this.scale;
+        const py = y * (editor.height + 1) * this.scale;
         this.selectedDiv.style.left = `${px}px`;
         this.selectedDiv.style.top = `${py}px`;
-        this.selectedDiv.style.width = `${(editor.width + 1) * scale}px`;
-        this.selectedDiv.style.height = `${(editor.height + 1) * scale}px`;
+        this.selectedDiv.style.width = `${(editor.width + 1) * this.scale}px`;
+        this.selectedDiv.style.height = `${(editor.height + 1) * this.scale}px`;
     }
 }
 
@@ -278,5 +276,10 @@ export default class FontTool implements ToolInterface {
         if (this.button.getToggle()) {
             this.window.change(editor);
         }
+    }
+
+    changeFont(_width: number, _height: number, editor: Editor): void {
+        this.window.redraw(editor);
+        this.window.setCode(editor.getCode(), editor);
     }
 }

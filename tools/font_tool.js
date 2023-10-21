@@ -8,6 +8,7 @@ class FontWindow {
     canvas = document.createElement('canvas');
     selectedDiv = document.createElement('div');
     canvases = new Array();
+    scale = 2;
     constructor(button) {
         this.button = button;
         this.div.style.position = 'relative';
@@ -44,9 +45,9 @@ class FontWindow {
         this.window.remove();
         this.button.setToggle(false);
     }
-    redraw(editor, scale = 3) {
-        const width = (editor.width * 16 + 16) * scale;
-        const height = (editor.height * 16 + 16) * scale;
+    redraw(editor) {
+        const width = (editor.width * 16 + 16) * this.scale;
+        const height = (editor.height * 16 + 16) * this.scale;
         this.div.style.width = `${width}px`;
         this.div.style.height = `${height}px`;
         this.canvas.height = height;
@@ -64,11 +65,11 @@ class FontWindow {
                     imageDataHorizontal.data.set(black.rgbaData, i);
                 }
             }
-            for (let y = (editor.height + 1) * scale; y < height; y += (editor.height + 1) * scale) {
+            for (let y = (editor.height + 1) * this.scale; y < height; y += (editor.height + 1) * this.scale) {
                 ctx.putImageData(imageDataHorizontal, 0, y);
             }
             const imageDataVertical = ctx.createImageData(1, height);
-            for (let i = 0; i < width * 4; i += 4) {
+            for (let i = 0; i < height * 4; i += 4) {
                 if (i % 8 == 0) {
                     imageDataVertical.data.set(gray.rgbaData, i);
                 }
@@ -76,10 +77,10 @@ class FontWindow {
                     imageDataVertical.data.set(black.rgbaData, i);
                 }
             }
-            for (let x = (editor.width + 1) * scale; x < width; x += (editor.width + 1) * scale) {
+            for (let x = (editor.width + 1) * this.scale; x < width; x += (editor.width + 1) * this.scale) {
                 ctx.putImageData(imageDataVertical, x, 0);
             }
-            ctx.font = '18px ui-monospace, monospace';
+            ctx.font = '13px ui-monospace, monospace';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = gray.toString();
@@ -89,20 +90,21 @@ class FontWindow {
                 for (let x = 0; x < 16; x += 1) {
                     const char = definitions[code].char;
                     if (char != null) {
-                        const px = Math.floor((x + 0.5) * editor.width * scale) +
-                            x * scale;
-                        const py = Math.floor((y + 0.5) * editor.height * scale) +
-                            y * scale +
+                        const px = Math.floor((x + 0.5) * editor.width * this.scale) +
+                            x * this.scale +
+                            1;
+                        const py = Math.floor((y + 0.5) * editor.height * this.scale) +
+                            y * this.scale +
                             2;
                         ctx.fillText(char, px, py);
                     }
                     const canvas = this.canvases[code];
                     canvas.width = editor.width;
                     canvas.height = editor.height;
-                    canvas.style.width = `${editor.width * scale}px`;
-                    canvas.style.height = `${editor.height * scale}px`;
-                    canvas.style.left = `${(x * (editor.width + 1) + 1) * scale}px`;
-                    canvas.style.top = `${(y * (editor.height + 1) + 1) * scale}px`;
+                    canvas.style.width = `${editor.width * this.scale}px`;
+                    canvas.style.height = `${editor.height * this.scale}px`;
+                    canvas.style.left = `${(x * (editor.width + 1) + 1) * this.scale}px`;
+                    canvas.style.top = `${(y * (editor.height + 1) + 1) * this.scale}px`;
                     this.updateGlyph(code, editor);
                     code += 1;
                 }
@@ -111,9 +113,6 @@ class FontWindow {
     }
     moveToRight(editor) {
         this.window.moveToRight(editor);
-    }
-    resize(editor) {
-        this.redraw(editor);
     }
     updateGlyph(code, editor) {
         const canvas = this.canvases[code];
@@ -131,15 +130,15 @@ class FontWindow {
     change(editor) {
         this.updateGlyph(editor.getCode(), editor);
     }
-    setCode(code, editor, scale = 3) {
+    setCode(code, editor) {
         const x = code % 16;
         const y = Math.floor(code / 16);
-        const px = x * (editor.width + 1) * scale;
-        const py = y * (editor.height + 1) * scale;
+        const px = x * (editor.width + 1) * this.scale;
+        const py = y * (editor.height + 1) * this.scale;
         this.selectedDiv.style.left = `${px}px`;
         this.selectedDiv.style.top = `${py}px`;
-        this.selectedDiv.style.width = `${(editor.width + 1) * scale}px`;
-        this.selectedDiv.style.height = `${(editor.height + 1) * scale}px`;
+        this.selectedDiv.style.width = `${(editor.width + 1) * this.scale}px`;
+        this.selectedDiv.style.height = `${(editor.height + 1) * this.scale}px`;
     }
 }
 export default class FontTool {
@@ -236,6 +235,10 @@ export default class FontTool {
         if (this.button.getToggle()) {
             this.window.change(editor);
         }
+    }
+    changeFont(_width, _height, editor) {
+        this.window.redraw(editor);
+        this.window.setCode(editor.getCode(), editor);
     }
 }
 //# sourceMappingURL=font_tool.js.map

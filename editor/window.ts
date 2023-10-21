@@ -122,11 +122,9 @@ export class Window {
         }
     }
 
-    moveToLeft(editor: Editor): void {
-        const viewportRect = editor.getViewportRect();
-        const divRect = this.div.getBoundingClientRect();
+    moveToLeft(_editor: Editor): void {
         const x = 25;
-        const y = Math.floor((viewportRect.height - divRect.height) / 2);
+        const y = 25;
         this.setPosition(new Coord(x, y));
     }
 
@@ -134,7 +132,7 @@ export class Window {
         const viewportRect = editor.getViewportRect();
         const divRect = this.div.getBoundingClientRect();
         const x = viewportRect.width - divRect.width - 25;
-        const y = Math.floor((viewportRect.height - divRect.height) / 2);
+        const y = 25;
         this.setPosition(new Coord(x, y));
     }
 }

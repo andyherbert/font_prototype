@@ -95,18 +95,16 @@ export class Window {
             this.div.parentElement.removeChild(this.div);
         }
     }
-    moveToLeft(editor) {
-        const viewportRect = editor.getViewportRect();
-        const divRect = this.div.getBoundingClientRect();
+    moveToLeft(_editor) {
         const x = 25;
-        const y = Math.floor((viewportRect.height - divRect.height) / 2);
+        const y = 25;
         this.setPosition(new Coord(x, y));
     }
     moveToRight(editor) {
         const viewportRect = editor.getViewportRect();
         const divRect = this.div.getBoundingClientRect();
         const x = viewportRect.width - divRect.width - 25;
-        const y = Math.floor((viewportRect.height - divRect.height) / 2);
+        const y = 25;
         this.setPosition(new Coord(x, y));
     }
 }

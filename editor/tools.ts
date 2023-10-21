@@ -96,4 +96,5 @@ export interface ToolInterface {
     scaled?(editor: Editor): void;
     setCode?(code: number, editor: Editor): void;
     setEncoding?(encoding: Encoding, editor: Editor): void;
+    changeFont?(width: number, height: number, editor: Editor): void;
 }

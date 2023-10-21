@@ -21,6 +21,8 @@ import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
 import ReadMeTool from '../tools/readme_tool.js';
 import SaveTool from '../tools/save_tool.js';
+import LoadTool from '../tools/load_tool.js';
+import NewTool from '../tools/new_tool.js';
 
 class Dock implements WindowInterface {
     private readonly window = new Window(this);
@@ -41,8 +43,8 @@ class Dock implements WindowInterface {
 }
 
 export default class Editor {
-    readonly width: number;
-    readonly height: number;
+    width: number;
+    height: number;
     private data: Array<Array<boolean>>;
     private rgbaData: Array<Uint8ClampedArray>;
     private currentCode = 0;
@@ -61,6 +63,8 @@ export default class Editor {
         new GridTool(),
         new ZoomTool(),
         new UndoTool(),
+        new NewTool(),
+        new LoadTool(),
         new SaveTool(),
         new ReadMeTool(),
     ];
@@ -109,6 +113,36 @@ export default class Editor {
         this.addWindow(this.dock);
 
         window.addEventListener('resize', this.resize.bind(this));
+    }
+
+    changeFont(width: number, height: number, data: Array<Array<boolean>>) {
+        this.width = width;
+        this.height = height;
+        this.data = data;
+        const rgbaData = new Uint8ClampedArray(width * height * 4);
+        for (let i = 0; i < rgbaData.length; i += 4) {
+            rgbaData.set(black.rgbaData, i);
+        }
+        this.rgbaData = new Array<Uint8ClampedArray>(256);
+        for (let i = 0; i < 256; i += 1) {
+            const imageData = new Uint8ClampedArray(rgbaData);
+            for (const [j, pixel] of data[i]!.entries()) {
+                if (pixel) {
+                    imageData.set(white.rgbaData, j * 4);
+                } else {
+                    imageData.set(black.rgbaData, j * 4);
+                }
+            }
+            this.rgbaData[i] = imageData;
+        }
+        if (this.currentScale > this.getMaxScale()) {
+            this.zoomToFit();
+        } else {
+            this.setScale(this.currentScale);
+        }
+        for (const tool of this.tools) {
+            tool.changeFont?.(width, height, this);
+        }
     }
 
     addElementToDock(element: HTMLElement): void {

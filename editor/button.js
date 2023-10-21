@@ -120,4 +120,36 @@ export class QuadButton {
         return this.div;
     }
 }
+export class LoadButton extends Button {
+    input = document.createElement('input');
+    label = document.createElement('label');
+    constructor(text) {
+        super(text);
+        this.input.type = 'file';
+        this.input.accept = '.png';
+        this.input.style.display = 'none';
+        this.label.appendChild(this.input);
+        this.div.style.position = 'relative';
+        this.label.style.position = 'absolute';
+        this.label.style.top = '0px';
+        this.label.style.left = '0px';
+        this.label.style.width = '100%';
+        this.label.style.height = '100%';
+        this.div.appendChild(this.label);
+    }
+    addEventListener(type, listener) {
+        this.label.addEventListener(type, listener);
+    }
+    addFileListener(listener) {
+        this.input.addEventListener('change', listener);
+    }
+    getFile() {
+        const file = this.input.files?.[0];
+        if (file == undefined) {
+            return null;
+        }
+        this.input.value = '';
+        return file;
+    }
+}
 //# sourceMappingURL=button.js.map
