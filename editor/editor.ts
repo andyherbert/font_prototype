@@ -23,6 +23,7 @@ import ReadMeTool from '../tools/readme_tool.js';
 import SaveTool from '../tools/save_tool.js';
 import LoadTool from '../tools/load_tool.js';
 import NewTool from '../tools/new_tool.js';
+import PreviewTool from '../tools/preview_tool.js';
 
 class Dock implements WindowInterface {
     private readonly window = new Window(this);
@@ -62,6 +63,7 @@ export default class Editor {
         new FontTool(),
         new GridTool(),
         new ZoomTool(),
+        new PreviewTool(),
         new UndoTool(),
         new NewTool(),
         new LoadTool(),

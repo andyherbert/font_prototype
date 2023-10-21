@@ -135,4 +135,12 @@ export class Window {
         const y = 25;
         this.setPosition(new Coord(x, y));
     }
+
+    moveToBottom(editor: Editor): void {
+        const viewportRect = editor.getViewportRect();
+        const divRect = this.div.getBoundingClientRect();
+        const x = (viewportRect.width - divRect.width) / 2;
+        const y = viewportRect.height - divRect.height - 25;
+        this.setPosition(new Coord(x, y));
+    }
 }
