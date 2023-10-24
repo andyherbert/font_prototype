@@ -180,6 +180,10 @@ export default class FontTool implements ToolInterface {
     shortcuts = [
         { code: 'KeyE', cmd: true, shift: false, repeat: false },
         { code: 'KeyF', cmd: true, shift: false, repeat: false },
+        { code: 'ArrowUp', cmd: false, shift: false, repeat: true },
+        { code: 'ArrowDown', cmd: false, shift: false, repeat: true },
+        { code: 'ArrowLeft', cmd: false, shift: false, repeat: true },
+        { code: 'ArrowRight', cmd: false, shift: false, repeat: true },
     ];
     private readonly button = new ToggleButton('Font');
     private readonly encodingButton = new Button('');
@@ -245,10 +249,38 @@ export default class FontTool implements ToolInterface {
         switch (key.code) {
             case 'KeyE':
                 this.encodingButtonClick(editor);
-                return false;
+                break;
             case 'KeyF':
                 this.fontButtonClick(editor);
-                return false;
+                break;
+            case 'ArrowUp': {
+                const code = editor.getCode();
+                if (this.button.getToggle() && code >= 16) {
+                    editor.setCode(code - 16);
+                }
+                break;
+            }
+            case 'ArrowDown': {
+                const code = editor.getCode();
+                if (this.button.getToggle() && code < 240) {
+                    editor.setCode(code + 16);
+                }
+                break;
+            }
+            case 'ArrowLeft': {
+                const code = editor.getCode();
+                if (this.button.getToggle() && code % 16 != 0) {
+                    editor.setCode(code - 1);
+                }
+                break;
+            }
+            case 'ArrowRight': {
+                const code = editor.getCode();
+                if (this.button.getToggle() && code % 16 != 15) {
+                    editor.setCode(code + 1);
+                }
+                break;
+            }
         }
         return false;
     }
