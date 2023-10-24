@@ -7,7 +7,6 @@ import {
     ToolInterface,
     black,
     gray,
-    white,
     red,
 } from '../editor/tools.js';
 import { Button, ToggleButton } from '../editor/button.js';
