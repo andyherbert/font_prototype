@@ -1,4 +1,4 @@
-import { Encoding, getDefinitions, black, gray, white, } from '../editor/tools.js';
+import { Encoding, getDefinitions, black, gray, red, } from '../editor/tools.js';
 import { Button, ToggleButton } from '../editor/button.js';
 import { Window } from '../editor/window.js';
 class FontWindow {
@@ -20,7 +20,7 @@ class FontWindow {
         this.div.appendChild(this.canvas);
         this.window.addElement(this.div);
         this.selectedDiv.style.position = 'absolute';
-        this.selectedDiv.style.border = `1px solid ${white.toString()}`;
+        this.selectedDiv.style.border = `1px solid ${red.toString()}`;
         this.selectedDiv.style.borderRadius = '2px';
         this.div.appendChild(this.selectedDiv);
         for (let i = 0; i < 256; i++) {

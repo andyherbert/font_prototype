@@ -477,4 +477,8 @@ export default class Editor {
     getViewportRect(): DOMRect {
         return this.div.getBoundingClientRect();
     }
+
+    focus(): void {
+        this.div.focus();
+    }
 }

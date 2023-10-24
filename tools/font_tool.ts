@@ -8,6 +8,7 @@ import {
     black,
     gray,
     white,
+    red,
 } from '../editor/tools.js';
 import { Button, ToggleButton } from '../editor/button.js';
 import { Window, WindowInterface } from '../editor/window.js';
@@ -33,7 +34,7 @@ class FontWindow implements WindowInterface {
         this.div.appendChild(this.canvas);
         this.window.addElement(this.div);
         this.selectedDiv.style.position = 'absolute';
-        this.selectedDiv.style.border = `1px solid ${white.toString()}`;
+        this.selectedDiv.style.border = `1px solid ${red.toString()}`;
         this.selectedDiv.style.borderRadius = '2px';
         this.div.appendChild(this.selectedDiv);
         for (let i = 0; i < 256; i++) {

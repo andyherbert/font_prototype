@@ -409,5 +409,8 @@ export default class Editor {
     getViewportRect() {
         return this.div.getBoundingClientRect();
     }
+    focus() {
+        this.div.focus();
+    }
 }
 //# sourceMappingURL=editor.js.map
