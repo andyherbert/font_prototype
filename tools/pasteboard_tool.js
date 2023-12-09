@@ -14,13 +14,13 @@ export default class PasteBoardTool {
         editor.addElementToDock(this.copyButton.getDiv());
         editor.addElementToDock(this.cutButton.getDiv());
         editor.addElementToDock(this.pasteButton.getDiv());
-        this.cutButton.addEventListener('pointerdown', () => {
-            this.cutButtonClick(editor);
-        });
-        this.cutButton.addEventListener('pointerdown', () => {
+        this.copyButton.addEventListener('pointerdown', () => {
             this.copyButtonClick(editor);
         });
         this.cutButton.addEventListener('pointerdown', () => {
+            this.cutButtonClick(editor);
+        });
+        this.pasteButton.addEventListener('pointerdown', () => {
             this.pasteButtonClick(editor);
         });
     }
