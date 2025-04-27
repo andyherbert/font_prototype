@@ -24,6 +24,7 @@ import ReadMeTool from '../tools/readme_tool.js';
 import SaveTool from '../tools/save_tool.js';
 import LoadTool from '../tools/load_tool.js';
 import LoadBitmaskTool from '../tools/load_bitmask.js';
+import SaveBitmaskTool from '../tools/save_bitmask.js';
 import WidthTool from '../tools/width.js';
 import HeightTool from '../tools/height.js';
 import NewTool from '../tools/new_tool.js';
@@ -61,7 +62,6 @@ export default class Editor {
     private readonly dock = new Dock();
     private currentScale = 0;
     private tools: Array<ToolInterface> = [
-        new LoadBitmaskTool(),
         new CanvasTool(),
         new PixelTool(), // index 1
         new FillTool(),
@@ -78,6 +78,8 @@ export default class Editor {
         new HeightTool(),
         new LoadTool(),
         new SaveTool(),
+        new LoadBitmaskTool(),
+        new SaveBitmaskTool(),
         new ReadMeTool(),
     ];
     private currentTool: number = 0;
