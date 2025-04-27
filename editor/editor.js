@@ -43,7 +43,7 @@ export default class Editor {
     currentScale = 0;
     tools = [
         new CanvasTool(),
-        new PixelTool(),
+        new PixelTool(), // index 1
         new FillTool(),
         new MoveTool(),
         new FontTool(),

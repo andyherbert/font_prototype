@@ -1,37 +1,33 @@
-import { Button } from '../editor/button.js';
+import { NumberButton } from '../editor/button.js';
 export default class ZoomTool {
-    name = 'Pixel';
+    name = 'Zoom';
     shortcuts = [
         { code: 'Minus', cmd: true, shift: false, repeat: true },
         { code: 'Equal', cmd: true, shift: false, repeat: true },
         { code: 'Digit0', cmd: true, shift: false, repeat: false },
     ];
-    zoomInButton = new Button('Zoom In');
-    zoomOutButton = new Button('Zoom Out');
-    zoomToFitButton = new Button('Fit to Screen');
+    zoomButton = new NumberButton('Zoom');
     zoomIn(editor) {
-        this.zoomInButton.flash();
+        this.zoomButton.flashIncrease();
         editor.zoomIn();
     }
     zoomOut(editor) {
-        this.zoomOutButton.flash();
+        this.zoomButton.flashDecrease();
         editor.zoomOut();
     }
     zoomToFit(editor) {
-        this.zoomToFitButton.flash();
+        this.zoomButton.flash();
         editor.zoomToFit();
     }
     init(editor) {
-        editor.addElementToDock(this.zoomInButton.getDiv());
-        editor.addElementToDock(this.zoomOutButton.getDiv());
-        editor.addElementToDock(this.zoomToFitButton.getDiv());
-        this.zoomInButton.addEventListener('pointerdown', () => {
-            this.zoomIn(editor);
-        });
-        this.zoomOutButton.addEventListener('pointerdown', () => {
+        editor.addElementToDock(this.zoomButton.getDiv());
+        this.zoomButton.addEventListenerDecrease('pointerdown', () => {
             this.zoomOut(editor);
         });
-        this.zoomToFitButton.addEventListener('pointerdown', () => {
+        this.zoomButton.addEventListenerIncrease('pointerdown', () => {
+            this.zoomIn(editor);
+        });
+        this.zoomButton.addEventListener('pointerdown', () => {
             this.zoomToFit(editor);
         });
     }

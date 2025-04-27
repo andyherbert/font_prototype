@@ -1,44 +1,40 @@
-import { Button } from '../editor/button.js';
+import { NumberButton } from '../editor/button.js';
 import Editor from '../editor/editor.js';
 import { Key, ToolInterface } from '../editor/tools.js';
 
 export default class ZoomTool implements ToolInterface {
-    readonly name = 'Pixel';
+    readonly name = 'Zoom';
     readonly shortcuts = [
         { code: 'Minus', cmd: true, shift: false, repeat: true },
         { code: 'Equal', cmd: true, shift: false, repeat: true },
         { code: 'Digit0', cmd: true, shift: false, repeat: false },
     ];
-    private readonly zoomInButton = new Button('Zoom In');
-    private readonly zoomOutButton = new Button('Zoom Out');
-    private readonly zoomToFitButton = new Button('Fit to Screen');
+    private readonly zoomButton = new NumberButton('Zoom');
 
     private zoomIn(editor: Editor): void {
-        this.zoomInButton.flash();
+        this.zoomButton.flashIncrease();
         editor.zoomIn();
     }
 
     private zoomOut(editor: Editor): void {
-        this.zoomOutButton.flash();
+        this.zoomButton.flashDecrease();
         editor.zoomOut();
     }
 
     private zoomToFit(editor: Editor): void {
-        this.zoomToFitButton.flash();
+        this.zoomButton.flash();
         editor.zoomToFit();
     }
 
     init(editor: Editor): void {
-        editor.addElementToDock(this.zoomInButton.getDiv());
-        editor.addElementToDock(this.zoomOutButton.getDiv());
-        editor.addElementToDock(this.zoomToFitButton.getDiv());
-        this.zoomInButton.addEventListener('pointerdown', () => {
-            this.zoomIn(editor);
-        });
-        this.zoomOutButton.addEventListener('pointerdown', () => {
+        editor.addElementToDock(this.zoomButton.getDiv());
+        this.zoomButton.addEventListenerDecrease('pointerdown', () => {
             this.zoomOut(editor);
         });
-        this.zoomToFitButton.addEventListener('pointerdown', () => {
+        this.zoomButton.addEventListenerIncrease('pointerdown', () => {
+            this.zoomIn(editor);
+        });
+        this.zoomButton.addEventListener('pointerdown', () => {
             this.zoomToFit(editor);
         });
     }
