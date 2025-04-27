@@ -24,7 +24,7 @@ function fileToCanvas(file: File): Promise<HTMLCanvasElement> {
 
 export default class LoadTool implements ToolInterface {
     name = 'Load';
-    private readonly button = new LoadButton('Load');
+    private readonly button = new LoadButton('Load', '.png');
 
     init(editor: Editor): void {
         editor.addElementToDock(this.button.getDiv());

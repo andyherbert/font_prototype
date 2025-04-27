@@ -123,10 +123,10 @@ export class QuadButton {
 export class LoadButton extends Button {
     input = document.createElement('input');
     label = document.createElement('label');
-    constructor(text) {
+    constructor(text, accept) {
         super(text);
         this.input.type = 'file';
-        this.input.accept = '.png';
+        this.input.accept = accept;
         this.input.style.display = 'none';
         this.label.appendChild(this.input);
         this.div.style.position = 'relative';

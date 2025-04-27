@@ -20,7 +20,7 @@ function fileToCanvas(file) {
 }
 export default class LoadTool {
     name = 'Load';
-    button = new LoadButton('Load');
+    button = new LoadButton('Load', '.png');
     init(editor) {
         editor.addElementToDock(this.button.getDiv());
         this.button.addEventListener('pointerdown', () => {

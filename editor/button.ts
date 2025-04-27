@@ -155,10 +155,10 @@ export class LoadButton extends Button {
     private readonly input = document.createElement('input');
     private readonly label = document.createElement('label');
 
-    constructor(text: string) {
+    constructor(text: string, accept: string) {
         super(text);
         this.input.type = 'file';
-        this.input.accept = '.png';
+        this.input.accept = accept;
         this.input.style.display = 'none';
         this.label.appendChild(this.input);
         this.div.style.position = 'relative';
