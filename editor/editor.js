@@ -130,6 +130,7 @@ export default class Editor {
         }
         for (const tool of this.tools) {
             tool.changeFont?.(width, height, this);
+            tool.setEncoding?.(this.encoding, this);
         }
     }
     addElementToDock(element) {
@@ -154,11 +155,10 @@ export default class Editor {
     }
     setHeader(text) {
         if (text != null) {
-            this.header.setTextContent(text);
-            this.header.show();
+            this.header.setTextContent(`${text} (${this.width}x${this.height})`);
         }
         else {
-            this.header.hide();
+            this.header.setTextContent(`${this.width}x${this.height}`);
         }
     }
     addTool(tool) {
