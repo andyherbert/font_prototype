@@ -13,6 +13,8 @@ import FontTool from '../tools/font_tool.js';
 import ReadMeTool from '../tools/readme_tool.js';
 import SaveTool from '../tools/save_tool.js';
 import LoadTool from '../tools/load_tool.js';
+import WidthTool from '../tools/width.js';
+import HeightTool from '../tools/height.js';
 import NewTool from '../tools/new_tool.js';
 import PreviewTool from '../tools/preview_tool.js';
 import PasteBoardTool from '../tools/pasteboard_tool.js';
@@ -53,6 +55,8 @@ export default class Editor {
         new PasteBoardTool(),
         new UndoTool(),
         new NewTool(),
+        new WidthTool(),
+        new HeightTool(),
         new LoadTool(),
         new SaveTool(),
         new ReadMeTool(),
@@ -413,6 +417,36 @@ export default class Editor {
     }
     focus() {
         this.div.focus();
+    }
+    getWidth() {
+        return this.width;
+    }
+    cropData(width, height) {
+        const data = new Array(256);
+        for (let i = 0; i < 256; i += 1) {
+            const pixels = new Array(width * height);
+            pixels.fill(false);
+            data[i] = pixels;
+            for (let y = 0; y < height && y < this.height; y += 1) {
+                for (let x = 0; x < width && x < this.width; x += 1) {
+                    const oldIndex = y * this.width + x;
+                    const newIndex = y * width + x;
+                    data[i][newIndex] = this.data[i][oldIndex];
+                }
+            }
+        }
+        return data;
+    }
+    setWidth(width) {
+        const data = this.cropData(width, this.height);
+        this.changeFont(width, this.height, data);
+    }
+    getHeight() {
+        return this.height;
+    }
+    setHeight(height) {
+        const data = this.cropData(this.width, height);
+        this.changeFont(this.width, height, data);
     }
 }
 //# sourceMappingURL=editor.js.map
