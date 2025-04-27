@@ -17,6 +17,7 @@ import GridTool from '../tools/grid_tool.js';
 import PixelTool from '../tools/pixel_tool.js';
 import FillTool from '../tools/fill_tool.js';
 import MoveTool from '../tools/move_tool.js';
+import MirrorTool from '../tools/mirror_tool.js';
 import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
 import ReadMeTool from '../tools/readme_tool.js';
@@ -63,6 +64,7 @@ export default class Editor {
         new PixelTool(), // index 1
         new FillTool(),
         new MoveTool(),
+        new MirrorTool(),
         new FontTool(),
         new GridTool(),
         new ZoomTool(),
