@@ -1,5 +1,8 @@
-This is a prototype textmode font editor, obviously it's a bit useless at the
-moment, but I'll keep chipping away at it.
+Bitmap Font Maker
+=================
+
+Bitmap Font Maker is a tool for creating bitmap fonts. It allows you to create and edit bitmap fonts in a simple and intuitive way. The tool is designed to be easy to use, even for those who are not familiar with font creation.
+It is a great tool for creating pixel art fonts for games and other applications.
 
 Keys are:
 
