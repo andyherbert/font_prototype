@@ -20,7 +20,6 @@ import MoveTool from '../tools/move_tool.js';
 import MirrorTool from '../tools/mirror_tool.js';
 import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
-import ReadMeTool from '../tools/readme_tool.js';
 import SaveTool from '../tools/save_tool.js';
 import LoadTool from '../tools/load_tool.js';
 import LoadBitmaskTool from '../tools/load_bitmask.js';
