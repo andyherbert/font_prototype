@@ -48,25 +48,25 @@ export default class Editor {
     currentScale = 0;
     tools = [
         new CanvasTool(),
-        new PixelTool(), // index 1
-        new FillTool(),
-        new MoveTool(),
-        new MirrorTool(),
-        new FontTool(),
-        new GridTool(),
-        new ZoomTool(),
-        new PreviewTool(),
-        new PasteBoardTool(),
-        new UndoTool(),
         new NewTool(),
-        new WidthTool(),
-        new HeightTool(),
         new LoadTool(),
         new SaveTool(),
         new LoadBitmaskTool(),
         new SaveBitmaskTool(),
+        new UndoTool(),
+        new WidthTool(),
+        new HeightTool(),
+        new PasteBoardTool(),
+        new PixelTool(), // index 10
+        new FillTool(),
+        new MoveTool(),
+        new MirrorTool(),
+        new ZoomTool(),
         // new ReadMeTool(),
+        new FontTool(),
+        new PreviewTool(),
         new SourceTool(),
+        new GridTool(),
     ];
     currentTool = 0;
     encoding = Encoding.Ascii;
@@ -357,7 +357,7 @@ export default class Editor {
         }
         this.dock.moveToLeft(this);
         this.setCode(65); // 'A'
-        this.focusTool(1); // Pixel tool
+        this.focusTool(10); // Pixel tool
     }
     getData() {
         return [...this.data[this.currentCode]];
