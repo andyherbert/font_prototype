@@ -54,9 +54,9 @@ export default class Editor {
         new LoadBitmaskTool(),
         new SaveBitmaskTool(),
         new UndoTool(),
+        new PasteBoardTool(),
         new WidthTool(),
         new HeightTool(),
-        new PasteBoardTool(),
         new PixelTool(), // index 10
         new FillTool(),
         new MoveTool(),

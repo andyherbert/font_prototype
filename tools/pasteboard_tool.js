@@ -2,8 +2,8 @@ import { Button } from '../editor/button.js';
 export default class PasteBoardTool {
     name = 'PasteBoard';
     shortcuts = [
-        { code: 'KeyC', cmd: true, shift: false, repeat: false },
         { code: 'KeyX', cmd: true, shift: false, repeat: false },
+        { code: 'KeyC', cmd: true, shift: false, repeat: false },
         { code: 'KeyV', cmd: true, shift: false, repeat: false },
     ];
     copyButton = new Button('Copy');
@@ -11,14 +11,14 @@ export default class PasteBoardTool {
     pasteButton = new Button('Paste');
     pasteboard = null;
     init(editor) {
-        editor.addElementToDock(this.copyButton.getDiv());
         editor.addElementToDock(this.cutButton.getDiv());
+        editor.addElementToDock(this.copyButton.getDiv());
         editor.addElementToDock(this.pasteButton.getDiv());
-        this.copyButton.addEventListener('pointerdown', () => {
-            this.copyButtonClick(editor);
-        });
         this.cutButton.addEventListener('pointerdown', () => {
             this.cutButtonClick(editor);
+        });
+        this.copyButton.addEventListener('pointerdown', () => {
+            this.copyButtonClick(editor);
         });
         this.pasteButton.addEventListener('pointerdown', () => {
             this.pasteButtonClick(editor);
