@@ -151,7 +151,7 @@ export default class FontTool {
         { code: 'ArrowLeft', cmd: false, shift: false, repeat: true },
         { code: 'ArrowRight', cmd: false, shift: false, repeat: true },
     ];
-    button = new ToggleButton('Font');
+    button = new ToggleButton('Font Window');
     encodingButton = new Button('');
     window = new FontWindow(this.button);
     init(editor) {
@@ -251,7 +251,7 @@ export default class FontTool {
         const code = editor.getCode();
         const definitions = getDefinitions(encoding);
         editor.setHeader(definitions[code].name);
-        this.encodingButton.setText(encoding);
+        this.encodingButton.setText(`Encoding: ${encoding}`);
         this.window.redraw(editor);
     }
     setCode(code, editor) {

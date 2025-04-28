@@ -20,7 +20,7 @@ function stringToArray(text: string): Array<number> {
 
 export default class PreviewTool implements ToolInterface {
     name = 'Preview';
-    private readonly button = new ToggleButton('Preview');
+    private readonly button = new ToggleButton('Preview Window');
     private readonly window = new Window(this);
     private readonly container = document.createElement('div');
     private readonly cursorDiv = document.createElement('div');

@@ -10,7 +10,7 @@ function stringToArray(text) {
 }
 export default class PreviewTool {
     name = 'Preview';
-    button = new ToggleButton('Preview');
+    button = new ToggleButton('Preview Window');
     window = new Window(this);
     container = document.createElement('div');
     cursorDiv = document.createElement('div');

@@ -185,7 +185,7 @@ export default class FontTool implements ToolInterface {
         { code: 'ArrowLeft', cmd: false, shift: false, repeat: true },
         { code: 'ArrowRight', cmd: false, shift: false, repeat: true },
     ];
-    private readonly button = new ToggleButton('Font');
+    private readonly button = new ToggleButton('Font Window');
     private readonly encodingButton = new Button('');
     private readonly window = new FontWindow(this.button);
 
@@ -289,7 +289,7 @@ export default class FontTool implements ToolInterface {
         const code = editor.getCode();
         const definitions = getDefinitions(encoding);
         editor.setHeader(definitions[code]!.name);
-        this.encodingButton.setText(encoding);
+        this.encodingButton.setText(`Encoding: ${encoding}`);
         this.window.redraw(editor);
     }
 
