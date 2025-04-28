@@ -11,7 +11,6 @@ import MoveTool from '../tools/move_tool.js';
 import MirrorTool from '../tools/mirror_tool.js';
 import ZoomTool from '../tools/zoom_tool.js';
 import FontTool from '../tools/font_tool.js';
-import ReadMeTool from '../tools/readme_tool.js';
 import SaveTool from '../tools/save_tool.js';
 import LoadTool from '../tools/load_tool.js';
 import LoadBitmaskTool from '../tools/load_bitmask.js';
@@ -21,6 +20,7 @@ import HeightTool from '../tools/height_tool.js';
 import NewTool from '../tools/new_tool.js';
 import PreviewTool from '../tools/preview_tool.js';
 import PasteBoardTool from '../tools/pasteboard_tool.js';
+import SourceTool from '../tools/source_tool.js';
 class Dock {
     window = new Window(this);
     constructor() { }
@@ -65,7 +65,8 @@ export default class Editor {
         new SaveTool(),
         new LoadBitmaskTool(),
         new SaveBitmaskTool(),
-        new ReadMeTool(),
+        // new ReadMeTool(),
+        new SourceTool(),
     ];
     currentTool = 0;
     encoding = Encoding.Ascii;

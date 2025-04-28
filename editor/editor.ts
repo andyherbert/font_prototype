@@ -30,6 +30,7 @@ import HeightTool from '../tools/height_tool.js';
 import NewTool from '../tools/new_tool.js';
 import PreviewTool from '../tools/preview_tool.js';
 import PasteBoardTool from '../tools/pasteboard_tool.js';
+import SourceTool from '../tools/source_tool.js';
 
 class Dock implements WindowInterface {
     private readonly window = new Window(this);
@@ -80,7 +81,8 @@ export default class Editor {
         new SaveTool(),
         new LoadBitmaskTool(),
         new SaveBitmaskTool(),
-        new ReadMeTool(),
+        // new ReadMeTool(),
+        new SourceTool(),
     ];
     private currentTool: number = 0;
     private encoding: Encoding = Encoding.Ascii;
