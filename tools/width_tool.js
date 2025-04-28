@@ -20,4 +20,4 @@ export default class WidthTool {
         });
     }
 }
-//# sourceMappingURL=width.js.map
+//# sourceMappingURL=width_tool.js.map
