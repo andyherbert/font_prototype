@@ -65,8 +65,8 @@ export default class Editor {
         // new ReadMeTool(),
         new FontTool(),
         new PreviewTool(),
-        new SourceTool(),
         new GridTool(),
+        new SourceTool(),
     ];
     currentTool = 0;
     encoding = Encoding.Ascii;

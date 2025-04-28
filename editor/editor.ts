@@ -80,8 +80,8 @@ export default class Editor {
         // new ReadMeTool(),
         new FontTool(),
         new PreviewTool(),
-        new SourceTool(),
         new GridTool(),
+        new SourceTool(),
     ];
     private currentTool: number = 0;
     private encoding: Encoding = Encoding.Ascii;
